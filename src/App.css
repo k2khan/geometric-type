@@ -1,38 +1,176 @@
+:root {
+  --bg-color: #323437;
+  --main-color: #e2b714;
+  --caret-color: #e2b714;
+  --sub-color: #646669;
+  --sub-alt-color: #2c2e31;
+  --text-color: #d1d0c5;
+  --error-color: #ca4754;
+  --error-extra-color: #7e2a33;
+  --colorful-error-color: #ca4754;
+  --colorful-error-extra-color: #7e2a33;
+}
+
+body {
+  font-family: 'Roboto Mono', monospace;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  margin: 0;
+  padding: 0;
+}
+
 .App {
   text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
+  padding: 20px;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.typing-test {
+  max-width: 1000px;
+  margin: 0 auto;
+  flex-grow: 1;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.words {
+  font-size: 1.5rem;
+  line-height: 1.5;
+  margin-bottom: 2rem;
+  text-align: left;
+  height: 120px;
+  overflow: hidden;
+}
+
+.words .current {
+  color: var(--sub-color);
+}
+
+.words .completed {
+  color: var(--main-color);
+}
+
+.typing-input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.stats {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 2rem;
+  font-size: 1.2rem;
+}
+
+button {
+  background-color: var(--sub-alt-color);
+  color: var(--text-color);
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 2rem;
+}
+
+button:hover {
+  background-color: var(--sub-color);
+}
+
+.words .current {
+  color: var(--sub-color);
+}
+
+.words .completed {
+  color: var(--main-color);
+}
+
+.words .current .correct {
+  color: var(--text-color);
+}
+
+.words .current .incorrect {
+  color: var(--error-color);
+}
+
+.typing-input {
+  opacity: 0;
+  position: absolute;
+  z-index: -1;
+}
+
+.typing-test {
+  position: relative;
+}
+
+.words {
+  position: relative;
+  font-size: 1.5rem;
+  line-height: 1.5;
+  margin-bottom: 2rem;
+  text-align: left;
+  height: 120px;
+  overflow: hidden;
+}
+
+.word {
+  display: inline-block;
+  margin-right: 0.5em;
+}
+
+.word.current {
+  color: var(--sub-color);
+}
+
+.word.completed {
+  color: var(--main-color);
+}
+
+.word span.correct {
+  color: var(--text-color);
+}
+
+.word span.incorrect {
+  color: var(--error-color);
+}
+
+.caret {
+  position: absolute;
+  width: 2px;
+  background-color: var(--caret-color);
+  transition: left 0.1s ease, top 0.1s ease;
+  animation: blink 0.7s infinite;
+}
+
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.typing-input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.stats {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 2rem;
+  font-size: 1.2rem;
+}
+
+button {
+  background-color: var(--sub-alt-color);
+  color: var(--text-color);
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 2rem;
+}
+
+button:hover {
+  background-color: var(--sub-color);
 }
