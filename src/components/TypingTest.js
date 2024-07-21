@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import WordGenerator from '../utils/WordGenerator';
 import GeometryEffect from './GeometryEffect';
+import SummaryPage from './SummaryPage';
+
 
 const TypingTest = () => {
   const [words, setWords] = useState([]);
@@ -11,24 +13,41 @@ const TypingTest = () => {
   const [startTime, setStartTime] = useState(null);
   const [wpm, setWpm] = useState(0);
   const [accuracy, setAccuracy] = useState(100);
-  const [testDuration, setTestDuration] = useState(30);
+  const [testDuration, setTestDuration] = useState(5);
   const [typedText, setTypedText] = useState('');
   const [typedChars, setTypedChars] = useState([]);
   const [timeLeft, setTimeLeft] = useState(testDuration);
   const [isTestComplete, setIsTestComplete] = useState(false);
-  const [recentTypedChars, setRecentTypedChars] = useState([]);
-  const inputRef = useRef(null);
-  const caretRef = useRef(null);
-  const wordsRef = useRef(null);
-  const [visibleWords, setVisibleWords] = useState([]);
-  const [wordOffset, setWordOffset] = useState(0);
   const [lastTypedCorrect, setLastTypedCorrect] = useState(true);
   const [lastTypedChar, setLastTypedChar] = useState('');
   const [wordEffects, setWordEffects] = useState({});
+  const inputRef = useRef(null);
+  const caretRef = useRef(null);
+  const wordsRef = useRef(null);
+  const [visibleLines, setVisibleLines] = useState(3);
+  const wordsContainerRef = useRef(null);
+
+
 
   useEffect(() => {
     resetTest();
   }, []);
+
+  useEffect(() => {
+    if (inputRef.current && !isTestComplete) {
+      inputRef.current.focus();
+    }
+  }, [isTestComplete]);
+
+  useEffect(() => {
+    if (wordsContainerRef.current) {
+      const containerHeight = wordsContainerRef.current.offsetHeight;
+      const wordsContainer = document.querySelector('.words');
+      if (wordsContainer) {
+        wordsContainer.style.height = `${containerHeight * visibleLines}px`;
+      }
+    }
+  }, [visibleLines]);
 
   useEffect(() => {
     if (startTime && !isTestComplete) {
@@ -75,13 +94,17 @@ const TypingTest = () => {
     setTimeLeft(testDuration);
     setTypedText('');
     setTypedChars([]);
-    setIsTestComplete(false);
+    setIsTestComplete(false); // Set isTestComplete to false after resetting
+    setLastTypedCorrect(true);
+    setLastTypedChar('');
+    setWordEffects({});
 
     if (inputRef.current) {
       inputRef.current.disabled = false;
-      inputRef.current.focus();
+      inputRef.current.focus(); // Focus the input field after resetting
     }
   };
+
 
   const handleKeyDown = (e) => {
     if (isTestComplete) return;
@@ -99,7 +122,6 @@ const TypingTest = () => {
         setCurrentCharIndex(0);
         setTypedText('');
         setTypedChars([]);
-        setRecentTypedChars(prev => [...prev, { time: Date.now(), correct: true }]);
         setWordEffects(prev => ({...prev, [currentWordIndex]: 'completed'}));
       }
     } else if (e.key === 'Backspace') {
@@ -111,7 +133,6 @@ const TypingTest = () => {
         } else {
           setIncorrectChars(prev => prev - 1);
         }
-        setRecentTypedChars(prev => prev.slice(0, -1));
       } else if (currentWordIndex > 0) {
         setCurrentWordIndex(prevIndex => prevIndex - 1);
         setCurrentCharIndex(words[currentWordIndex - 1].length);
@@ -128,7 +149,6 @@ const TypingTest = () => {
         setIncorrectChars(prev => prev + 1);
         setWordEffects(prev => ({...prev, [currentWordIndex]: 'incorrect'}));
       }
-      setRecentTypedChars(prev => [...prev, { time: Date.now(), correct: isCorrect }]);
       setLastTypedChar(e.key);
       setLastTypedCorrect(isCorrect);
     }
@@ -187,33 +207,46 @@ const TypingTest = () => {
   };
 
   const renderWords = () => {
-    return words.map((word, wordIndex) => {
-      const effect = wordEffects[wordIndex];
-      const wordClass = `word ${wordIndex === currentWordIndex ? 'current' : ''} ${effect || ''}`;
+    const lines = [];
+    let currentLine = [];
 
-      return (
+    words.forEach((word, wordIndex) => {
+      const wordClass = `word ${wordIndex === currentWordIndex ? 'current' : ''} ${wordEffects[wordIndex] || ''}`;
+
+      const wordChars = word.split('').map((char, charIndex) => {
+        let charClass = '';
+        if (wordIndex === currentWordIndex) {
+          if (charIndex < typedChars.length) {
+            charClass = typedChars[charIndex].isCorrect ? 'correct' : 'incorrect';
+          } else if (charIndex === currentCharIndex) {
+            charClass = 'current';
+          }
+        }
+        return <span key={charIndex} className={charClass}>{char}</span>;
+      });
+
+      currentLine.push(
           <span key={wordIndex} className={wordClass}>
-          {word.split('').map((char, charIndex) => {
-            let charClass = '';
-            if (wordIndex === currentWordIndex) {
-              if (charIndex < typedChars.length) {
-                charClass = typedChars[charIndex].isCorrect ? 'correct' : 'incorrect';
-              } else if (charIndex === currentCharIndex) {
-                charClass = 'current';
-              }
-            }
-            return <span key={charIndex} className={charClass}>{char}</span>;
-          })}
+        {wordChars}
             {' '}
-        </span>
+      </span>
       );
+
+      if (currentLine.length >= 20 || wordIndex === words.length - 1) {
+        lines.push(<div key={lines.length}>{currentLine}</div>);
+        currentLine = [];
+      }
     });
+
+    return lines;
   };
 
   return (
       <div className="typing-test">
         <GeometryEffect char={lastTypedChar} correct={lastTypedCorrect} />
-        {!isTestComplete ? (
+        {isTestComplete ? (
+            <SummaryPage wpm={wpm} accuracy={accuracy} resetTest={resetTest} />
+        ) : (
             <>
               <div className="words" ref={wordsRef} onClick={() => inputRef.current.focus()}>
                 {renderWords()}
@@ -233,13 +266,6 @@ const TypingTest = () => {
                 <div>Time left: {timeLeft}s</div>
               </div>
             </>
-        ) : (
-            <div className="results">
-              <h2>Test Complete!</h2>
-              <p>WPM: {wpm}</p>
-              <p>Accuracy: {accuracy}%</p>
-              <button onClick={resetTest}>Replay</button>
-            </div>
         )}
       </div>
   );
