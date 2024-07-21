@@ -25,14 +25,14 @@ body {
   align-items: center;
   min-height: 100vh;
   padding: 20px;
+  position: relative;
+  z-index: 1;
 }
 
 .typing-test {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  max-width: 800px; /* adjust as needed */
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 800px;
   width: 100%;
 }
 
@@ -182,4 +182,95 @@ button {
 
 button:hover {
   background-color: var(--sub-color);
+}
+
+.typing-test {
+  position: relative;
+}
+
+.words-container {
+  font-size: 1.5rem;
+  line-height: 1.5;
+  margin-bottom: 2rem;
+}
+
+.word {
+  margin-right: 0.5em;
+}
+
+.current {
+  color: #646669;
+}
+
+.typed-char {
+  color: #d1d0c5;
+}
+
+.current-char {
+  color: #e2b714;
+}
+
+.caret {
+  position: absolute;
+  width: 2px;
+  height: 1.5em;
+  background-color: #e2b714;
+  animation: blink 0.7s infinite;
+}
+
+.hidden-input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.word {
+  transition: all 0.3s ease;
+}
+
+.word.correct {
+  color: #9eff66;
+  transform: scale(1.05);
+}
+
+.word.incorrect {
+  color: #ca4754;
+  transform: scale(0.95);
+}
+
+.word.completed {
+  color: #4ae0e0;
+  transform: translateY(-5px);
+}
+
+.word span.correct {
+  color: #9eff66;
+}
+
+.word span.incorrect {
+  color: #ca4754;
+  text-decoration: underline;
+}
+
+.word span.current {
+  border-left: 2px solid #e2b714;
+}
+
+.caret {
+  position: absolute;
+  width: 2px;
+  background-color: #e2b714;
+  animation: blink 0.7s infinite;
+}
+
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0; }
+  100% { opacity: 1; }
 }

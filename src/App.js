@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
-import './App.css';
+import './styles/App.css';
 import TypingTest from './components/TypingTest';
+import DynamicBackground from './components/DynamicBackground';
+
 
 function App() {
-  const [theme] = useState('default');
-
-  return (
-    <div className={`App theme-${theme}`}>
-      <TypingTest />
-    </div>
-  );
+    return (
+        <div className="App">
+            <DynamicBackground />
+            <TypingTest />
+        </div>
+    );
 }
 
 export default App;
