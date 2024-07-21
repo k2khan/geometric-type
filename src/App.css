@@ -20,26 +20,31 @@ body {
 }
 
 .App {
-  text-align: center;
-  padding: 20px;
-  min-height: 100vh;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
 }
 
 .typing-test {
-  max-width: 1000px;
-  margin: 0 auto;
-  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 800px; /* adjust as needed */
+  width: 100%;
 }
 
 .words {
+  position: relative;
   font-size: 1.5rem;
   line-height: 1.5;
   margin-bottom: 2rem;
   text-align: left;
   height: 120px;
   overflow: hidden;
+  width: 100%;
 }
 
 .words .current {
@@ -59,6 +64,7 @@ body {
 .stats {
   display: flex;
   justify-content: space-around;
+  width: 100%;
   margin-top: 2rem;
   font-size: 1.2rem;
 }
@@ -139,6 +145,9 @@ button:hover {
   width: 2px;
   background-color: var(--caret-color);
   transition: left 0.1s ease, top 0.1s ease;
+}
+
+.caret.blinking {
   animation: blink 0.7s infinite;
 }
 

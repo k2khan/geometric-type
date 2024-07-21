@@ -48,6 +48,12 @@ const TypingTest = () => {
     setWpm(0);
     setAccuracy(100);
     setTimeLeft(testDuration);
+    
+    // Set initial caret position
+    setTimeout(() => {
+      updateCaretPosition();
+    }, 0);
+  
     if (inputRef.current) inputRef.current.focus();
   };
 
@@ -55,30 +61,35 @@ const TypingTest = () => {
     if (!startTime) {
       setStartTime(Date.now());
     }
-
+  
     const currentWord = words[currentWordIndex];
-
+  
     if (e.key === ' ') {
       e.preventDefault();
       if (currentCharIndex === currentWord.length) {
-        setCurrentWordIndex(currentWordIndex + 1);
+        setCurrentWordIndex(prevIndex => prevIndex + 1);
         setCurrentCharIndex(0);
       }
     } else if (e.key === 'Backspace') {
       if (currentCharIndex > 0) {
-        setCurrentCharIndex(currentCharIndex - 1);
+        setCurrentCharIndex(prevIndex => prevIndex - 1);
       } else if (currentWordIndex > 0) {
-        setCurrentWordIndex(currentWordIndex - 1);
+        setCurrentWordIndex(prevIndex => prevIndex - 1);
         setCurrentCharIndex(words[currentWordIndex - 1].length);
       }
     } else if (currentCharIndex < currentWord.length) {
       if (e.key === currentWord[currentCharIndex]) {
-        setCorrectChars(correctChars + 1);
+        setCorrectChars(prevCount => prevCount + 1);
       }
-      setCurrentCharIndex(currentCharIndex + 1);
+      setCurrentCharIndex(prevIndex => prevIndex + 1);
     }
-
+  
     calculateStats();
+  
+    // Use setTimeout to ensure DOM updates before updating caret position
+    setTimeout(() => {
+      updateCaretPosition();
+    }, 0);
   };
 
   const calculateStats = () => {
@@ -97,29 +108,26 @@ const TypingTest = () => {
   };
 
   const updateCaretPosition = () => {
-    if (caretRef.current && wordsRef.current) {
-      const wordElements = wordsRef.current.querySelectorAll('.word');
-      const currentWordElement = wordElements[currentWordIndex];
-      
+    if (caretRef.current) {
+      const currentWordElement = document.querySelector(`.word-${currentWordIndex}`);
       if (currentWordElement) {
         const chars = currentWordElement.querySelectorAll('span');
-        let targetRect;
-        
+        let rect;
         if (currentCharIndex < chars.length) {
-          targetRect = chars[currentCharIndex].getBoundingClientRect();
+          rect = chars[currentCharIndex].getBoundingClientRect();
         } else {
           // If at the end of the word, position after the last character
-          targetRect = chars[chars.length - 1].getBoundingClientRect();
-          targetRect = {
-            ...targetRect,
-            left: targetRect.right,
+          const lastChar = chars[chars.length - 1];
+          rect = lastChar.getBoundingClientRect();
+          rect = {
+            ...rect,
+            left: rect.right,
           };
         }
-
-        const wordsRect = wordsRef.current.getBoundingClientRect();
-        caretRef.current.style.left = `${targetRect.left - wordsRect.left}px`;
-        caretRef.current.style.top = `${targetRect.top - wordsRect.top}px`;
-        caretRef.current.style.height = `${targetRect.height}px`;
+        const wordsRect = document.querySelector('.words').getBoundingClientRect();
+        caretRef.current.style.left = `${rect.left - wordsRect.left}px`;
+        caretRef.current.style.top = `${rect.top - wordsRect.top}px`;
+        caretRef.current.style.height = `${rect.height || 20}px`; // Default height if rect.height is 0
       }
     }
   };
@@ -150,7 +158,7 @@ const TypingTest = () => {
     <div className="typing-test">
       <div className="words" ref={wordsRef} onClick={() => inputRef.current.focus()}>
         {renderWords()}
-        <div ref={caretRef} className="caret"></div>
+        <div ref={caretRef} className="caret blinking"></div>
       </div>
       <input
         ref={inputRef}
