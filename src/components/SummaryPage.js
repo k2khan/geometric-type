@@ -5,7 +5,7 @@ import { collection, addDoc, query, orderBy, limit, getDocs } from 'firebase/fir
 import '../styles/Modal.css';
 import '../styles/Buttons.css';
 
-const SummaryPage = ({ wpm, accuracy, resetTest, completedWords, completedChars, incorrectChars, wordAccuracy }) => {
+const SummaryPage = ({ wpm, accuracy, resetTest, completedWords, completedChars, incorrectChars, wordAccuracy, difficulty }) => {
     const [scores, setScores] = useState([]);
     const [alias, setAlias] = useState('');
 
@@ -33,12 +33,13 @@ const SummaryPage = ({ wpm, accuracy, resetTest, completedWords, completedChars,
 
     const handleAddScore = () => {
         if (alias.trim()) {
-            const newScore = { wpm, accuracy, alias: alias.trim() };
+            const newScore = { wpm, accuracy, alias: alias.trim(), difficulty };
             addScore(newScore);
         } else {
             alert("Please enter an alias before adding to the leaderboard.");
         }
     };
+
 
     return (
         <div className="summary-overlay">

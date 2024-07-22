@@ -13,6 +13,7 @@ const Leaderboard = ({ scores }) => {
                         <th>Alias</th>
                         <th>WPM</th>
                         <th>Accuracy</th>
+                        <th>Difficulty</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -22,6 +23,7 @@ const Leaderboard = ({ scores }) => {
                             <td>{score.alias}</td>
                             <td>{score.wpm}</td>
                             <td>{score.accuracy}%</td>
+                            <td>{score.difficulty}</td>
                         </tr>
                     ))}
                     </tbody>

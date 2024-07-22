@@ -3,6 +3,7 @@ import WordGenerator from '../utils/WordGenerator';
 import GeometryEffect from './GeometryEffect';
 import SummaryPage from './SummaryPage';
 import DurationBanner from './DurationBanner';
+import DifficultySelector from './DifficultySelector';
 import '../styles/Buttons.css';
 
 const TypingTest = () => {
@@ -22,6 +23,7 @@ const TypingTest = () => {
   const [completedWords, setCompletedWords] = useState([]);
   const [correctWords, setCorrectWords] = useState(0);
   const [totalAttemptedWords, setTotalAttemptedWords] = useState(0);
+  const [difficulty, setDifficulty] = useState('medium');
 
   const inputRef = useRef(null);
   const caretRef = useRef(null);
@@ -57,16 +59,18 @@ const TypingTest = () => {
   const scrollToCurrentWord = useCallback(() => {
     if (wordsContainerRef.current && wordsRef.current) {
       const containerHeight = wordsContainerRef.current.offsetHeight;
-      const lineHeight = 60; // Increased from 48
-      const currentLineNumber = Math.floor(currentWordIndex / 5); // Keep this as 5
-      const scrollTop = currentLineNumber * lineHeight - containerHeight / 2 + lineHeight / 2;
+      const currentWordElement = document.querySelector('.word.current');
+      if (currentWordElement) {
+        const wordTop = currentWordElement.offsetTop;
+        const scrollTop = wordTop - containerHeight / 2 + currentWordElement.offsetHeight / 2;
 
-      wordsContainerRef.current.scrollTo({
-        top: Math.max(0, scrollTop),
-        behavior: 'smooth'
-      });
+        wordsContainerRef.current.scrollTo({
+          top: Math.max(0, scrollTop),
+          behavior: 'smooth'
+        });
+      }
     }
-  }, [currentWordIndex]);
+  }, []);
 
   const endTest = useCallback(() => {
     setIsTestComplete(true);
@@ -86,7 +90,7 @@ const TypingTest = () => {
   }, [startTime]);
 
   const resetTest = useCallback(() => {
-    setWords(WordGenerator.generateWords(100));
+    setWords(WordGenerator.generateWords(100, difficulty));
     setCurrentWordIndex(0);
     setCurrentCharIndex(0);
     correctCharsRef.current = 0;
@@ -108,11 +112,11 @@ const TypingTest = () => {
       inputRef.current.disabled = false;
       inputRef.current.focus();
     }
-  }, [testDuration]);
+  }, [testDuration, difficulty]);
 
   useEffect(() => {
     resetTest();
-  }, [testDuration, resetTest]);
+  }, [resetTest]);
 
   useEffect(() => {
     if (inputRef.current && !isTestComplete) {
@@ -159,7 +163,7 @@ const TypingTest = () => {
   }, []);
 
   const addMoreWords = () => {
-    const newWords = WordGenerator.generateWords(80); // Increased from 50
+    const newWords = WordGenerator.generateWords(80, difficulty);
     setWords((prevWords) => [...prevWords, ...newWords]);
   };
 
@@ -220,8 +224,26 @@ const TypingTest = () => {
     }
   };
 
+  const handleDurationChange = (newDuration) => {
+    setTestDuration(newDuration);
+    setTimeLeft(newDuration);
+    if (!startTime) {
+      // Only reset the test if it hasn't started yet
+      resetTest();
+    }
+  };
+
+  const handleDifficultyChange = (newDifficulty) => {
+    setDifficulty(newDifficulty);
+    if (!startTime) {
+      // Only reset the test if it hasn't started yet
+      resetTest();
+    }
+  };
+
+  const WORDS_PER_LINE = 13; // You can adjust this number as needed
+
   const renderWords = () => {
-    const wordsPerLine = 5; // Keep this the same as before
     return words.map((word, wordIndex) => {
       const isCurrentWord = wordIndex === currentWordIndex;
       const isCompletedWord = wordIndex < currentWordIndex;
@@ -229,32 +251,34 @@ const TypingTest = () => {
 
       return (
           <React.Fragment key={wordIndex}>
-            {wordIndex % wordsPerLine === 0 && wordIndex !== 0 && <br />}
+            {wordIndex % WORDS_PER_LINE === 0 && wordIndex !== 0 && <br />}
             <span className={wordClass}>
-          {word.split('').map((char, charIndex) => {
-            let charClass = '';
-            if (isCurrentWord) {
-              if (charIndex < typedChars.length) {
-                charClass = typedChars[charIndex].isCorrect ? 'correct' : 'incorrect';
+            {word.split('').map((char, charIndex) => {
+              let charClass = '';
+              if (isCurrentWord) {
+                if (charIndex < typedChars.length) {
+                  charClass = typedChars[charIndex].isCorrect ? 'correct' : 'incorrect';
+                }
+              } else if (isCompletedWord) {
+                const completedChars = completedWords[wordIndex];
+                if (completedChars && charIndex < completedChars.length) {
+                  charClass = completedChars[charIndex].isCorrect ? 'correct' : 'incorrect';
+                }
               }
-            } else if (isCompletedWord) {
-              const completedChars = completedWords[wordIndex];
-              if (completedChars && charIndex < completedChars.length) {
-                charClass = completedChars[charIndex].isCorrect ? 'correct' : 'incorrect';
-              }
-            }
-            return <span key={charIndex} className={charClass}>{char}</span>;
-          })}
+              return <span key={charIndex} className={charClass}>{char}</span>;
+            })}
               {' '}
-        </span>
+          </span>
           </React.Fragment>
       );
     });
   };
 
+
   return (
       <div className="typing-test">
-        <DurationBanner setTestDuration={setTestDuration} />
+        <DurationBanner setTestDuration={handleDurationChange} currentDuration={testDuration} />
+        <DifficultySelector setDifficulty={handleDifficultyChange} currentDifficulty={difficulty} />
         <GeometryEffect char={lastTypedChar} correct={lastTypedCorrect} />
         {isTestComplete ? (
             <SummaryPage
@@ -265,6 +289,7 @@ const TypingTest = () => {
                 completedChars={correctCharsRef.current + incorrectCharsRef.current}
                 incorrectChars={incorrectCharsRef.current}
                 wordAccuracy={totalAttemptedWords > 0 ? Math.round((correctWords / totalAttemptedWords) * 100) : 100}
+                difficulty={difficulty}
             />
         ) : (
             <>
@@ -296,4 +321,4 @@ const TypingTest = () => {
   );
 };
 
-export default TypingTest;
+export default TypingTest;;

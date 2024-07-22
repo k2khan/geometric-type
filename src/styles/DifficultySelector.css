@@ -1,0 +1,26 @@
+.difficulty-selector {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.difficulty-selector button {
+    margin: 0 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    background-color: var(--sub-alt-color);
+    color: var(--text-color);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.difficulty-selector button:hover {
+    background-color: var(--main-color);
+}
+
+.difficulty-selector button.active {
+    background-color: var(--main-color);
+    color: var(--bg-color);
+}

@@ -1,30 +1,59 @@
 class WordGenerator {
-  static wordList = [
+  static easyWords = [
+    "the", "be", "to", "of", "and", "a", "in", "that", "have", "I",
+    "it", "for", "not", "on", "with", "he", "as", "you", "do", "at",
+    "this", "but", "his", "by", "from", "they", "we", "say", "her", "she",
+    "or", "an", "will", "my", "one", "all", "would", "there", "their", "what",
+    "so", "up", "out", "if", "about", "who", "get", "which", "go", "me",
+    "when", "make", "can", "like", "time", "no", "just", "him", "know", "take",
+    "people", "into", "year", "your", "good", "some", "could", "them", "see", "other",
+    "than", "then", "now", "look", "only", "come", "its", "over", "think", "also",
+    "back", "after", "use", "two", "how", "our", "work", "first", "well", "way",
+    "even", "new", "want", "because", "any", "these", "give", "day", "most", "us"
+  ];
+
+  static mediumWords = [
     "ability", "achieve", "acquire", "adapt", "advance", "advice", "affect", "agree", "allow", "amount",
     "analyze", "annual", "appear", "apply", "approach", "appropriate", "argue", "arrange", "assume", "attend",
     "balance", "believe", "benefit", "build", "calculate", "career", "carry", "cause", "change", "choose",
-    "clear", "combine", "common", "compare", "compete", "complete", "complex", "concept", "concern", "confirm",
-    "connect", "consider", "consist", "constant", "contain", "continue", "create", "current", "decide", "define",
-    "demand", "describe", "design", "determine", "develop", "different", "difficult", "direct", "discuss", "divide",
-    "effect", "effort", "encourage", "ensure", "establish", "estimate", "evaluate", "event", "evidence", "example",
-    "explain", "express", "extend", "factor", "feature", "figure", "final", "focus", "form", "function",
-    "general", "goal", "growth", "guide", "happen", "history", "identify", "imagine", "improve", "include",
-    "increase", "indicate", "individual", "influence", "information", "interest", "involve", "issue", "knowledge", "likely",
-    "maintain", "manage", "material", "matter", "measure", "method", "model", "modern", "natural", "necessary",
-    "obtain", "occur", "offer", "opinion", "option", "organize", "original", "particular", "perform", "period",
-    "picture", "policy", "popular", "position", "positive", "possible", "practice", "prepare", "present", "prevent",
-    "produce", "product", "project", "promote", "propose", "provide", "purpose", "quality", "question", "range",
-    "realize", "reason", "receive", "recognize", "recommend", "record", "reduce", "reflect", "regard", "relate",
-    "remain", "remember", "report", "represent", "require", "research", "resource", "respond", "result", "reveal",
-    "review", "secure", "separate", "serious", "service", "similar", "simple", "situation", "source", "specific",
-    "strategy", "structure", "success", "suggest", "support", "suppose", "theory", "understand", "unique", "value",
-    "various", "view", "whole", "wonder", "worker", "within"
+    "clarify", "collaborate", "collect", "communicate", "compare", "compete", "complete", "conclude", "conduct", "confirm",
+    "consider", "consist", "constitute", "consult", "contain", "continue", "contribute", "create", "define", "deliver",
+    "demonstrate", "depend", "describe", "design", "determine", "develop", "differ", "discuss", "distribute", "document",
+    "dominate", "emphasize", "enable", "encourage", "ensure", "establish", "evaluate", "examine", "exceed", "exclude",
+    "exist", "expand", "expect", "experience", "explain", "express", "extend", "facilitate", "finance", "focus",
+    "generate", "identify", "illustrate", "implement", "improve", "include", "increase", "indicate", "influence", "inform",
+    "initiate", "install", "interact", "introduce", "investigate", "involve", "maintain", "manage", "measure", "negotiate"
   ];
 
-  static generateWords(count) {
+  static hardWords = [
+    "abstruse", "acquiesce", "ameliorate", "anomaly", "arcane", "belligerent", "cacophony", "circumlocution", "cognizant", "conundrum",
+    "deleterious", "ebullient", "ephemeral", "esoteric", "fastidious", "gregarious", "heterogeneous", "idiosyncratic", "indefatigable", "juxtapose",
+    "labyrinthine", "mellifluous", "nefarious", "obfuscate", "paradigm", "quintessential", "recalcitrant", "surreptitious", "ubiquitous", "vociferous",
+    "aberration", "abeyance", "abjure", "abnegate", "abrogate", "abscond", "abstemious", "acerbic", "acrimony", "adumbrate",
+    "aesthetic", "afflatus", "agglomerate", "alacrity", "altruistic", "ambivalent", "ameliorate", "anachronistic", "anathema", "anodyne",
+    "antipathy", "apocryphal", "approbation", "arbitrary", "arcane", "arduous", "artless", "ascetic", "asperity", "assiduous",
+    "attenuate", "audacious", "austere", "avarice", "aver", "axiomatic", "beguile", "bereft", "blandishment", "bombastic",
+    "cachet", "cajole", "callous", "calumny", "capricious", "captious", "cardinal", "catalyze", "caustic", "celestial",
+    "chicanery", "clemency", "cogent", "cognizant", "commensurate", "compendium", "complacent", "complicit", "conciliate", "condone",
+    "conflagration", "congruent", "connive", "consternation", "construe", "contend", "contretemps", "converge", "convivial", "corollary"
+  ];
+
+  static generateWords(count, difficulty = 'medium') {
+    let wordList;
+    switch(difficulty) {
+      case 'easy':
+        wordList = this.easyWords;
+        break;
+      case 'hard':
+        wordList = this.hardWords;
+        break;
+      default:
+        wordList = this.mediumWords;
+    }
+
     const words = [];
     for (let i = 0; i < count; i++) {
-      words.push(this.wordList[Math.floor(Math.random() * this.wordList.length)]);
+      words.push(wordList[Math.floor(Math.random() * wordList.length)]);
     }
     return words;
   }
