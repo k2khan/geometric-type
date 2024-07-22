@@ -56,7 +56,7 @@ const TypingTest = () => {
     if (!isTestComplete) {
       calculateStats();
     }
-  }, [correctChars, incorrectChars, isTestComplete]);
+  }, [correctChars, incorrectChars, isTestComplete]);;
 
   useEffect(() => {
     updateCaretPosition();
@@ -111,21 +111,29 @@ const TypingTest = () => {
       inputRef.current.disabled = false;
       inputRef.current.focus();
     }
-  };
+  };;
 
   const calculateStats = () => {
     if (startTime && isTestComplete) {
-      const now = Date.now();
-      const timeElapsed = (now - startTime) / 60000; // Time elapsed in minutes
-      const totalChars = words.slice(0, currentWordIndex).join('').length;
-      const grossWpm = (totalChars / 5) / timeElapsed; // Gross WPM
-      const netWpm = Math.round(grossWpm - (incorrectChars / timeElapsed)); // Net WPM
-      setWpm(netWpm);
+      const endTime = Date.now();
+      const timeElapsedInMinutes = (endTime - startTime) / 60000; // Time elapsed in minutes
 
-      const accuracy = totalChars > 0 ? Math.round((correctChars / totalChars) * 100) : 100;
-      setAccuracy(accuracy);
+      // Count correctly typed words
+      const correctWords = words.slice(0, currentWordIndex).filter((word, index) =>
+          wordEffects[index] === 'completed' || wordEffects[index] === 'correct'
+      ).length;
+
+      // Calculate WPM
+      const calculatedWpm = Math.round(correctWords / timeElapsedInMinutes);
+      setWpm(calculatedWpm);
+
+      // Calculate accuracy
+      const totalTypedChars = correctChars + incorrectChars;
+      const calculatedAccuracy = totalTypedChars > 0 ? Math.round((correctChars / totalTypedChars) * 100) : 100;
+      setAccuracy(calculatedAccuracy);
     }
   };
+
 
 
   const handleKeyDown = (e) => {
@@ -281,7 +289,6 @@ const TypingTest = () => {
                   </button>
                 </div>
               </div>
-
             </>
         )}
       </div>

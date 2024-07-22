@@ -241,3 +241,25 @@ button:hover {
 .retry-button:hover {
   background-color: rgba(255, 255, 255, 0.4);
 }
+
+.leaderboard {
+  margin-top: 2rem;
+}
+
+.leaderboard h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.leaderboard ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+}
+
+.leaderboard li {
+  margin-bottom: 0.5rem;
+}
+
+.leaderboard li span {
+  margin-right: 1rem;
+}
