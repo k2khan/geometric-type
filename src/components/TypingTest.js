@@ -20,8 +20,7 @@ const TypingTest = () => {
   const [isTestComplete, setIsTestComplete] = useState(false);
   const [lastTypedCorrect, setLastTypedCorrect] = useState(true);
   const [lastTypedChar, setLastTypedChar] = useState('');
-  const [wordEffects, setWordEffects] = useState({});
-  const [wordAccuracy, setWordAccuracy] = useState({});
+  const [completedWords, setCompletedWords] = useState([]);
 
   const inputRef = useRef(null);
   const caretRef = useRef(null);
@@ -88,7 +87,7 @@ const TypingTest = () => {
     if (inputRef.current) inputRef.current.disabled = true;
 
     const endTime = Date.now();
-    const timeElapsed = (endTime - startTime) / 60000; // Time elapsed in minutes
+    const timeElapsed = (endTime - startTime) / 60000;
 
     const totalCharsTyped = correctCharsRef.current + incorrectCharsRef.current;
     const totalWordsTyped = totalCharsTyped / 5;
@@ -98,15 +97,6 @@ const TypingTest = () => {
 
     const accuracy = totalCharsTyped > 0 ? Math.round((correctCharsRef.current / totalCharsTyped) * 100) : 100;
     setAccuracy(accuracy);
-
-    console.log('Test completed!');
-    console.log('Correct characters:', correctCharsRef.current);
-    console.log('Incorrect characters:', incorrectCharsRef.current);
-    console.log('Time elapsed (minutes):', timeElapsed);
-    console.log('Total characters typed:', totalCharsTyped);
-    console.log('Total words typed:', totalWordsTyped);
-    console.log('WPM:', wpm);
-    console.log('Accuracy:', accuracy, '%');
   };
 
   const resetTest = () => {
@@ -126,8 +116,7 @@ const TypingTest = () => {
     setIsTestComplete(false);
     setLastTypedCorrect(true);
     setLastTypedChar('');
-    setWordEffects({});
-    setWordAccuracy({});
+    setCompletedWords([]);
 
     if (inputRef.current) {
       inputRef.current.disabled = false;
@@ -147,13 +136,11 @@ const TypingTest = () => {
     if (e.key === ' ') {
       e.preventDefault();
       if (currentCharIndex === currentWord.length) {
-        const isWordCorrect = typedChars.every(char => char.isCorrect);
-        setWordAccuracy(prev => ({ ...prev, [currentWordIndex]: isWordCorrect }));
+        setCompletedWords(prev => [...prev, typedChars]);
         setCurrentWordIndex((prevIndex) => prevIndex + 1);
         setCurrentCharIndex(0);
         setTypedText('');
         setTypedChars([]);
-        setWordEffects((prev) => ({ ...prev, [currentWordIndex]: 'completed' }));
       }
     } else if (e.key === 'Backspace') {
       if (currentCharIndex > 0) {
@@ -168,8 +155,10 @@ const TypingTest = () => {
         }
       } else if (currentWordIndex > 0) {
         setCurrentWordIndex((prevIndex) => prevIndex - 1);
-        setCurrentCharIndex(words[currentWordIndex - 1].length);
-        setTypedChars([]);
+        const previousWord = completedWords[currentWordIndex - 1];
+        setCurrentCharIndex(previousWord.length);
+        setTypedChars(previousWord);
+        setCompletedWords(prev => prev.slice(0, -1));
       }
     } else if (currentCharIndex < currentWord.length && e.key.length === 1) {
       const isCorrect = e.key === currentWord[currentCharIndex];
@@ -181,30 +170,22 @@ const TypingTest = () => {
       } else {
         incorrectCharsRef.current++;
         setIncorrectChars(incorrectCharsRef.current);
-        setWordAccuracy(prev => ({ ...prev, [currentWordIndex]: false }));
       }
-      setWordEffects((prev) => ({ ...prev, [currentWordIndex]: isCorrect ? 'correct' : 'incorrect' }));
       setLastTypedChar(e.key);
       setLastTypedCorrect(isCorrect);
-
-      console.log(`Key pressed: ${e.key}`);
-      console.log(`Current word: ${currentWord}`);
-      console.log(`Correct chars: ${correctCharsRef.current}`);
-      console.log(`Incorrect chars: ${incorrectCharsRef.current}`);
     }
   };
 
   const renderWords = () => {
     const wordsPerLine = 5;
-    return words.map((word, index) => {
-      const isCurrentWord = index === currentWordIndex;
-      const isWordCompleted = wordEffects[index] === 'completed';
-      const isWordIncorrect = isWordCompleted && !wordAccuracy[index];
-      const wordClass = `word ${isCurrentWord ? 'current' : ''} ${isWordIncorrect ? 'incorrect' : ''} ${wordEffects[index] || ''}`;
+    return words.map((word, wordIndex) => {
+      const isCurrentWord = wordIndex === currentWordIndex;
+      const isCompletedWord = wordIndex < currentWordIndex;
+      const wordClass = `word ${isCurrentWord ? 'current' : ''} ${isCompletedWord ? 'completed' : ''}`;
 
       return (
-          <React.Fragment key={index}>
-            {index % wordsPerLine === 0 && index !== 0 && <br />}
+          <React.Fragment key={wordIndex}>
+            {wordIndex % wordsPerLine === 0 && wordIndex !== 0 && <br />}
             <span className={wordClass}>
             {word.split('').map((char, charIndex) => {
               let charClass = '';
@@ -212,8 +193,11 @@ const TypingTest = () => {
                 if (charIndex < typedChars.length) {
                   charClass = typedChars[charIndex].isCorrect ? 'correct' : 'incorrect';
                 }
-              } else if (isWordCompleted) {
-                charClass = isWordIncorrect ? 'incorrect' : 'correct';
+              } else if (isCompletedWord) {
+                const completedChars = completedWords[wordIndex];
+                if (completedChars && charIndex < completedChars.length) {
+                  charClass = completedChars[charIndex].isCorrect ? 'correct' : 'incorrect';
+                }
               }
               return <span key={charIndex} className={charClass}>{char}</span>;
             })}
@@ -251,7 +235,7 @@ const TypingTest = () => {
   const scrollToCurrentWord = () => {
     if (wordsContainerRef.current && wordsRef.current) {
       const containerHeight = wordsContainerRef.current.offsetHeight;
-      const lineHeight = 48; // Adjust this value based on your CSS
+      const lineHeight = 48;
       const currentLineNumber = Math.floor(currentWordIndex / 5);
       const scrollTop = currentLineNumber * lineHeight - containerHeight / 2 + lineHeight / 2;
 

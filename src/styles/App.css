@@ -9,9 +9,8 @@
   --error-extra-color: #7e2a33;
   --colorful-error-color: #ca4754;
   --colorful-error-extra-color: #7e2a33;
-  --correct-letter-color: #9eff66; /* Green color from the colors array */
-  --correct-word-color: #4ae0e0; /* Cyan color from the colors array */
-  --caret-color: #e2b714; /* Yellow color from the colors array */
+  --correct-letter-color: #9eff66;
+  --correct-word-color: #4ae0e0;
 }
 
 body {
@@ -41,11 +40,11 @@ body {
 
 .words-container {
   position: relative;
-  height: 144px; /* This should be exactly 3 lines high */
+  height: 144px;
   overflow: hidden;
   margin-bottom: 2rem;
-  display: flex; /* Added */
-  justify-content: center; /* Added */
+  display: flex;
+  justify-content: center;
 }
 
 .words {
@@ -57,33 +56,26 @@ body {
   font-size: 28px;
   line-height: 48px;
   letter-spacing: 0.05em;
-  text-align: center; /* Added */
-}
-
-.word-line {
-  white-space: nowrap;
-  height: 48px;
+  text-align: center;
 }
 
 .word {
   display: inline-block;
   margin-right: 0.4em;
   transition: all 0.3s ease;
-  opacity: 0.6; /* Set default opacity for all words */
+  color: var(--text-color);
 }
 
 .word.current {
   color: var(--text-color);
-  opacity: 1; /* Full opacity for the current word */
 }
 
 .word.completed {
-  color: var(--sub-color);
-  opacity: 0.6; /* You can adjust this value if you want completed words to look different */
+  opacity: 0.6;
 }
 
 .word span.correct {
-  color: var(--main-color);
+  color: var(--correct-letter-color);
 }
 
 .word span.incorrect {
@@ -122,7 +114,6 @@ body {
   font-size: 1.2rem;
 }
 
-
 .stats > div {
   margin: 0 1rem;
 }
@@ -141,7 +132,6 @@ button:hover {
   background-color: var(--sub-color);
 }
 
-/* Styles for SummaryPage */
 .summary-overlay {
   position: fixed;
   top: 0;
@@ -203,23 +193,6 @@ button:hover {
   background-color: var(--text-color);
 }
 
-.word span.correct {
-  color: var(--correct-letter-color);
-}
-
-.word.completed {
-  color: var(--correct-word-color);
-}
-
-.stats {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  margin-top: 2rem;
-  font-size: 1.2rem;
-}
-
 .time-left-container {
   display: flex;
   flex-direction: column;
@@ -235,7 +208,7 @@ button:hover {
   cursor: pointer;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   transition: background-color 0.3s ease;
-  margin-top: 1rem; /* Add some spacing between the time left and retry button */
+  margin-top: 1rem;
 }
 
 .retry-button:hover {
@@ -263,7 +236,6 @@ button:hover {
 .leaderboard tr:nth-child(even) {
   background-color: var(--sub-alt-color);
 }
-
 
 .duration-banner {
   display: flex;
@@ -293,8 +265,4 @@ button:hover {
 .duration-banner button.active {
   background-color: var(--main-color);
   color: var(--bg-color);
-}
-
-.word.incorrect {
-  color: var(--error-color);
 }
