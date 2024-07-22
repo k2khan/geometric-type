@@ -21,6 +21,8 @@ const TypingTest = () => {
   const [lastTypedCorrect, setLastTypedCorrect] = useState(true);
   const [lastTypedChar, setLastTypedChar] = useState('');
   const [completedWords, setCompletedWords] = useState([]);
+  const [correctWords, setCorrectWords] = useState(0);
+  const [totalAttemptedWords, setTotalAttemptedWords] = useState(0);
 
   const inputRef = useRef(null);
   const caretRef = useRef(null);
@@ -117,6 +119,8 @@ const TypingTest = () => {
     setLastTypedCorrect(true);
     setLastTypedChar('');
     setCompletedWords([]);
+    setCorrectWords(0);
+    setTotalAttemptedWords(0);
 
     if (inputRef.current) {
       inputRef.current.disabled = false;
@@ -136,11 +140,16 @@ const TypingTest = () => {
     if (e.key === ' ') {
       e.preventDefault();
       if (currentCharIndex === currentWord.length) {
+        const isWordCorrect = typedChars.every(char => char.isCorrect);
         setCompletedWords(prev => [...prev, typedChars]);
         setCurrentWordIndex((prevIndex) => prevIndex + 1);
         setCurrentCharIndex(0);
         setTypedText('');
         setTypedChars([]);
+        setTotalAttemptedWords(prev => prev + 1);
+        if (isWordCorrect) {
+          setCorrectWords(prev => prev + 1);
+        }
       }
     } else if (e.key === 'Backspace') {
       if (currentCharIndex > 0) {
@@ -159,6 +168,10 @@ const TypingTest = () => {
         setCurrentCharIndex(previousWord.length);
         setTypedChars(previousWord);
         setCompletedWords(prev => prev.slice(0, -1));
+        setTotalAttemptedWords(prev => prev - 1);
+        if (previousWord.every(char => char.isCorrect)) {
+          setCorrectWords(prev => prev - 1);
+        }
       }
     } else if (currentCharIndex < currentWord.length && e.key.length === 1) {
       const isCorrect = e.key === currentWord[currentCharIndex];
@@ -258,7 +271,7 @@ const TypingTest = () => {
                 completedWords={words.slice(0, currentWordIndex).length}
                 completedChars={correctCharsRef.current + incorrectCharsRef.current}
                 incorrectChars={incorrectCharsRef.current}
-                wordAccuracy={Math.round((correctCharsRef.current / (correctCharsRef.current + incorrectCharsRef.current)) * 100)}
+                wordAccuracy={totalAttemptedWords > 0 ? Math.round((correctWords / totalAttemptedWords) * 100) : 100}
             />
         ) : (
             <>

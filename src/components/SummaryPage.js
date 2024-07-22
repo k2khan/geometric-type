@@ -45,8 +45,8 @@ const SummaryPage = ({ wpm, accuracy, resetTest, completedWords, completedChars,
                         <span className="summary-value">{wpm}</span>
                     </div>
                     <div className="summary-item">
-                        <span className="summary-label">Accuracy:</span>
-                        <span className="summary-value">{accuracy}%</span>
+                        <span className="summary-label">Word Accuracy:</span>
+                        <span className="summary-value">{wordAccuracy}%</span>
                     </div>
                     <div className="summary-item">
                         <span className="summary-label">Completed Words:</span>
@@ -61,8 +61,8 @@ const SummaryPage = ({ wpm, accuracy, resetTest, completedWords, completedChars,
                         <span className="summary-value">{incorrectChars}</span>
                     </div>
                     <div className="summary-item">
-                        <span className="summary-label">Word Accuracy:</span>
-                        <span className="summary-value">{wordAccuracy}%</span>
+                        <span className="summary-label">Character Accuracy:</span>
+                        <span className="summary-value">{accuracy}%</span>
                     </div>
                 </div>
                 <input
