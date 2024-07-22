@@ -26,4 +26,5 @@ const Leaderboard = ({ scores }) => {
     );
 };
 
+
 export default Leaderboard;

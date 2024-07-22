@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import WordGenerator from '../utils/WordGenerator';
 import GeometryEffect from './GeometryEffect';
 import SummaryPage from './SummaryPage';
@@ -9,8 +9,6 @@ const TypingTest = () => {
   const [words, setWords] = useState([]);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [currentCharIndex, setCurrentCharIndex] = useState(0);
-  const [correctChars, setCorrectChars] = useState(0);
-  const [incorrectChars, setIncorrectChars] = useState(0);
   const [startTime, setStartTime] = useState(null);
   const [wpm, setWpm] = useState(0);
   const [accuracy, setAccuracy] = useState(100);
@@ -32,9 +30,89 @@ const TypingTest = () => {
   const correctCharsRef = useRef(0);
   const incorrectCharsRef = useRef(0);
 
+  const updateCaretPosition = useCallback(() => {
+    if (caretRef.current && !isTestComplete) {
+      const currentWordElement = document.querySelector(`.word.current`);
+      if (currentWordElement) {
+        const chars = currentWordElement.querySelectorAll('span');
+        let rect;
+        if (currentCharIndex < chars.length) {
+          rect = chars[currentCharIndex].getBoundingClientRect();
+        } else {
+          const lastChar = chars[chars.length - 1];
+          rect = lastChar.getBoundingClientRect();
+          rect = {
+            ...rect,
+            left: rect.right,
+          };
+        }
+        const wordsRect = wordsRef.current.getBoundingClientRect();
+        caretRef.current.style.left = `${rect.left - wordsRect.left}px`;
+        caretRef.current.style.top = `${rect.top - wordsRect.top}px`;
+        caretRef.current.style.height = `${rect.height}px`;
+      }
+    }
+  }, [isTestComplete, currentCharIndex]);
+
+  const scrollToCurrentWord = useCallback(() => {
+    if (wordsContainerRef.current && wordsRef.current) {
+      const containerHeight = wordsContainerRef.current.offsetHeight;
+      const lineHeight = 48;
+      const currentLineNumber = Math.floor(currentWordIndex / 5);
+      const scrollTop = currentLineNumber * lineHeight - containerHeight / 2 + lineHeight / 2;
+
+      wordsContainerRef.current.scrollTo({
+        top: Math.max(0, scrollTop),
+        behavior: 'smooth'
+      });
+    }
+  }, [currentWordIndex]);
+
+  const endTest = useCallback(() => {
+    setIsTestComplete(true);
+    if (inputRef.current) inputRef.current.disabled = true;
+
+    const endTime = Date.now();
+    const timeElapsed = (endTime - startTime) / 60000;
+
+    const totalCharsTyped = correctCharsRef.current + incorrectCharsRef.current;
+    const totalWordsTyped = totalCharsTyped / 5;
+
+    const wpm = Math.round(totalWordsTyped / timeElapsed);
+    setWpm(wpm);
+
+    const accuracy = totalCharsTyped > 0 ? Math.round((correctCharsRef.current / totalCharsTyped) * 100) : 100;
+    setAccuracy(accuracy);
+  }, [startTime]);
+
+  const resetTest = useCallback(() => {
+    setWords(WordGenerator.generateWords(100));
+    setCurrentWordIndex(0);
+    setCurrentCharIndex(0);
+    correctCharsRef.current = 0;
+    incorrectCharsRef.current = 0;
+    setStartTime(null);
+    setWpm(0);
+    setAccuracy(100);
+    setTimeLeft(testDuration);
+    setTypedText('');
+    setTypedChars([]);
+    setIsTestComplete(false);
+    setLastTypedCorrect(true);
+    setLastTypedChar('');
+    setCompletedWords([]);
+    setCorrectWords(0);
+    setTotalAttemptedWords(0);
+
+    if (inputRef.current) {
+      inputRef.current.disabled = false;
+      inputRef.current.focus();
+    }
+  }, [testDuration]);
+
   useEffect(() => {
     resetTest();
-  }, [testDuration]);
+  }, [testDuration, resetTest]);
 
   useEffect(() => {
     if (inputRef.current && !isTestComplete) {
@@ -58,12 +136,12 @@ const TypingTest = () => {
     }
 
     return () => clearInterval(timer);
-  }, [startTime, isTestComplete]);
+  }, [startTime, isTestComplete, endTest]);
 
   useEffect(() => {
     updateCaretPosition();
     scrollToCurrentWord();
-  }, [currentWordIndex, currentCharIndex, typedChars]);
+  }, [currentWordIndex, currentCharIndex, typedChars, updateCaretPosition, scrollToCurrentWord]);
 
   useEffect(() => {
     if (currentWordIndex >= words.length - 20) {
@@ -83,50 +161,6 @@ const TypingTest = () => {
   const addMoreWords = () => {
     const newWords = WordGenerator.generateWords(50);
     setWords((prevWords) => [...prevWords, ...newWords]);
-  };
-
-  const endTest = () => {
-    setIsTestComplete(true);
-    if (inputRef.current) inputRef.current.disabled = true;
-
-    const endTime = Date.now();
-    const timeElapsed = (endTime - startTime) / 60000;
-
-    const totalCharsTyped = correctCharsRef.current + incorrectCharsRef.current;
-    const totalWordsTyped = totalCharsTyped / 5;
-
-    const wpm = Math.round(totalWordsTyped / timeElapsed);
-    setWpm(wpm);
-
-    const accuracy = totalCharsTyped > 0 ? Math.round((correctCharsRef.current / totalCharsTyped) * 100) : 100;
-    setAccuracy(accuracy);
-  };
-
-  const resetTest = () => {
-    setWords(WordGenerator.generateWords(100));
-    setCurrentWordIndex(0);
-    setCurrentCharIndex(0);
-    correctCharsRef.current = 0;
-    incorrectCharsRef.current = 0;
-    setCorrectChars(0);
-    setIncorrectChars(0);
-    setStartTime(null);
-    setWpm(0);
-    setAccuracy(100);
-    setTimeLeft(testDuration);
-    setTypedText('');
-    setTypedChars([]);
-    setIsTestComplete(false);
-    setLastTypedCorrect(true);
-    setLastTypedChar('');
-    setCompletedWords([]);
-    setCorrectWords(0);
-    setTotalAttemptedWords(0);
-
-    if (inputRef.current) {
-      inputRef.current.disabled = false;
-      inputRef.current.focus();
-    }
   };
 
   const handleKeyDown = (e) => {
@@ -158,10 +192,8 @@ const TypingTest = () => {
         setTypedChars((prev) => prev.slice(0, -1));
         if (typedChars[currentCharIndex - 1]?.isCorrect) {
           correctCharsRef.current--;
-          setCorrectChars(correctCharsRef.current);
         } else {
           incorrectCharsRef.current--;
-          setIncorrectChars(incorrectCharsRef.current);
         }
       } else if (currentWordIndex > 0) {
         setCurrentWordIndex((prevIndex) => prevIndex - 1);
@@ -180,10 +212,8 @@ const TypingTest = () => {
       setCurrentCharIndex((prevIndex) => prevIndex + 1);
       if (isCorrect) {
         correctCharsRef.current++;
-        setCorrectChars(correctCharsRef.current);
       } else {
         incorrectCharsRef.current++;
-        setIncorrectChars(incorrectCharsRef.current);
       }
       setLastTypedChar(e.key);
       setLastTypedCorrect(isCorrect);
@@ -220,44 +250,6 @@ const TypingTest = () => {
           </React.Fragment>
       );
     });
-  };
-
-  const updateCaretPosition = () => {
-    if (caretRef.current && !isTestComplete) {
-      const currentWordElement = document.querySelector(`.word.current`);
-      if (currentWordElement) {
-        const chars = currentWordElement.querySelectorAll('span');
-        let rect;
-        if (currentCharIndex < chars.length) {
-          rect = chars[currentCharIndex].getBoundingClientRect();
-        } else {
-          const lastChar = chars[chars.length - 1];
-          rect = lastChar.getBoundingClientRect();
-          rect = {
-            ...rect,
-            left: rect.right,
-          };
-        }
-        const wordsRect = wordsRef.current.getBoundingClientRect();
-        caretRef.current.style.left = `${rect.left - wordsRect.left}px`;
-        caretRef.current.style.top = `${rect.top - wordsRect.top}px`;
-        caretRef.current.style.height = `${rect.height}px`;
-      }
-    }
-  };
-
-  const scrollToCurrentWord = () => {
-    if (wordsContainerRef.current && wordsRef.current) {
-      const containerHeight = wordsContainerRef.current.offsetHeight;
-      const lineHeight = 48;
-      const currentLineNumber = Math.floor(currentWordIndex / 5);
-      const scrollTop = currentLineNumber * lineHeight - containerHeight / 2 + lineHeight / 2;
-
-      wordsContainerRef.current.scrollTo({
-        top: Math.max(0, scrollTop),
-        behavior: 'smooth'
-      });
-    }
   };
 
   return (
