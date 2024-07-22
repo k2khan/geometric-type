@@ -21,6 +21,7 @@ const TypingTest = () => {
   const [lastTypedCorrect, setLastTypedCorrect] = useState(true);
   const [lastTypedChar, setLastTypedChar] = useState('');
   const [wordEffects, setWordEffects] = useState({});
+  const [wordAccuracy, setWordAccuracy] = useState({});
 
   const inputRef = useRef(null);
   const caretRef = useRef(null);
@@ -89,15 +90,12 @@ const TypingTest = () => {
     const endTime = Date.now();
     const timeElapsed = (endTime - startTime) / 60000; // Time elapsed in minutes
 
-    // Use the ref values for correct and incorrect characters
     const totalCharsTyped = correctCharsRef.current + incorrectCharsRef.current;
     const totalWordsTyped = totalCharsTyped / 5;
 
-    // Calculate WPM
     const wpm = Math.round(totalWordsTyped / timeElapsed);
     setWpm(wpm);
 
-    // Calculate accuracy
     const accuracy = totalCharsTyped > 0 ? Math.round((correctCharsRef.current / totalCharsTyped) * 100) : 100;
     setAccuracy(accuracy);
 
@@ -129,6 +127,7 @@ const TypingTest = () => {
     setLastTypedCorrect(true);
     setLastTypedChar('');
     setWordEffects({});
+    setWordAccuracy({});
 
     if (inputRef.current) {
       inputRef.current.disabled = false;
@@ -148,6 +147,8 @@ const TypingTest = () => {
     if (e.key === ' ') {
       e.preventDefault();
       if (currentCharIndex === currentWord.length) {
+        const isWordCorrect = typedChars.every(char => char.isCorrect);
+        setWordAccuracy(prev => ({ ...prev, [currentWordIndex]: isWordCorrect }));
         setCurrentWordIndex((prevIndex) => prevIndex + 1);
         setCurrentCharIndex(0);
         setTypedText('');
@@ -177,12 +178,12 @@ const TypingTest = () => {
       if (isCorrect) {
         correctCharsRef.current++;
         setCorrectChars(correctCharsRef.current);
-        setWordEffects((prev) => ({ ...prev, [currentWordIndex]: 'correct' }));
       } else {
         incorrectCharsRef.current++;
         setIncorrectChars(incorrectCharsRef.current);
-        setWordEffects((prev) => ({ ...prev, [currentWordIndex]: 'incorrect' }));
+        setWordAccuracy(prev => ({ ...prev, [currentWordIndex]: false }));
       }
+      setWordEffects((prev) => ({ ...prev, [currentWordIndex]: isCorrect ? 'correct' : 'incorrect' }));
       setLastTypedChar(e.key);
       setLastTypedCorrect(isCorrect);
 
@@ -197,8 +198,9 @@ const TypingTest = () => {
     const wordsPerLine = 5;
     return words.map((word, index) => {
       const isCurrentWord = index === currentWordIndex;
-      const wordClass = `word ${isCurrentWord ? 'current' : ''} ${wordEffects[index] || ''}`;
       const isWordCompleted = wordEffects[index] === 'completed';
+      const isWordIncorrect = isWordCompleted && !wordAccuracy[index];
+      const wordClass = `word ${isCurrentWord ? 'current' : ''} ${isWordIncorrect ? 'incorrect' : ''} ${wordEffects[index] || ''}`;
 
       return (
           <React.Fragment key={index}>
@@ -211,7 +213,7 @@ const TypingTest = () => {
                   charClass = typedChars[charIndex].isCorrect ? 'correct' : 'incorrect';
                 }
               } else if (isWordCompleted) {
-                charClass = 'completed';
+                charClass = isWordIncorrect ? 'incorrect' : 'correct';
               }
               return <span key={charIndex} className={charClass}>{char}</span>;
             })}

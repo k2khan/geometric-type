@@ -242,27 +242,28 @@ button:hover {
   background-color: rgba(255, 255, 255, 0.4);
 }
 
-.leaderboard {
-  margin-top: 2rem;
+.leaderboard table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
 }
 
-.leaderboard h2 {
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
+.leaderboard th,
+.leaderboard td {
+  padding: 0.5rem;
+  text-align: left;
+  border-bottom: 1px solid var(--sub-color);
 }
 
-.leaderboard ol {
-  list-style-type: decimal;
-  padding-left: 1.5rem;
+.leaderboard th {
+  background-color: var(--sub-alt-color);
+  color: var(--text-color);
 }
 
-.leaderboard li {
-  margin-bottom: 0.5rem;
+.leaderboard tr:nth-child(even) {
+  background-color: var(--sub-alt-color);
 }
 
-.leaderboard li span {
-  margin-right: 1rem;
-}
 
 .duration-banner {
   display: flex;
@@ -292,4 +293,8 @@ button:hover {
 .duration-banner button.active {
   background-color: var(--main-color);
   color: var(--bg-color);
+}
+
+.word.incorrect {
+  color: var(--error-color);
 }

@@ -4,16 +4,26 @@ const Leaderboard = ({ scores }) => {
     return (
         <div className="leaderboard">
             <h2>Leaderboard</h2>
-            <ol>
+            <table>
+                <thead>
+                <tr>
+                    <th>Alias</th>
+                    <th>WPM</th>
+                    <th>Accuracy</th>
+                </tr>
+                </thead>
+                <tbody>
                 {scores.map((score, index) => (
-                    <li key={index}>
-                        <span>{score.alias}</span>
-                        <span>WPM: {score.wpm}</span>
-                        <span>Accuracy: {score.accuracy}%</span>
-                    </li>
+                    <tr key={index}>
+                        <td>{score.alias}</td>
+                        <td>{score.wpm}</td>
+                        <td>{score.accuracy}%</td>
+                    </tr>
                 ))}
-            </ol>
+                </tbody>
+            </table>
         </div>
     );
 };
+
 export default Leaderboard;
