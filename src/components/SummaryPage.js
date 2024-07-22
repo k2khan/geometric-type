@@ -32,53 +32,52 @@ const SummaryPage = ({ wpm, accuracy, resetTest, completedWords, completedChars,
     };
 
     const handleAddScore = () => {
-        const newScore = { wpm, accuracy, alias };
-        addScore(newScore);
+        if (alias.trim()) {
+            const newScore = { wpm, accuracy, alias: alias.trim() };
+            addScore(newScore);
+        } else {
+            alert("Please enter an alias before adding to the leaderboard.");
+        }
     };
 
     return (
         <div className="summary-overlay">
             <div className="summary-container">
                 <h2 className="summary-title">Test Complete!</h2>
-                <div className="summary-grid">
-                    <div className="summary-item">
-                        <span className="summary-label">WPM:</span>
+                <div className="summary-stats">
+                    <div className="summary-stat">
+                        <span className="summary-label">WPM</span>
                         <span className="summary-value">{wpm}</span>
                     </div>
-                    <div className="summary-item">
-                        <span className="summary-label">Word Accuracy:</span>
-                        <span className="summary-value">{wordAccuracy}%</span>
-                    </div>
-                    <div className="summary-item">
-                        <span className="summary-label">Completed Words:</span>
-                        <span className="summary-value">{completedWords}</span>
-                    </div>
-                    <div className="summary-item">
-                        <span className="summary-label">Completed Characters:</span>
-                        <span className="summary-value">{completedChars}</span>
-                    </div>
-                    <div className="summary-item">
-                        <span className="summary-label">Incorrect Characters:</span>
-                        <span className="summary-value">{incorrectChars}</span>
-                    </div>
-                    <div className="summary-item">
-                        <span className="summary-label">Character Accuracy:</span>
+                    <div className="summary-stat">
+                        <span className="summary-label">Accuracy</span>
                         <span className="summary-value">{accuracy}%</span>
                     </div>
+                    <div className="summary-stat">
+                        <span className="summary-label">Words</span>
+                        <span className="summary-value">{completedWords}</span>
+                    </div>
+                    <div className="summary-stat">
+                        <span className="summary-label">Characters</span>
+                        <span className="summary-value">{completedChars}</span>
+                    </div>
                 </div>
-                <input
-                    type="text"
-                    placeholder="Enter your alias"
-                    value={alias}
-                    onChange={(e) => setAlias(e.target.value)}
-                />
-                <button className="btn btn-primary" onClick={resetTest}>
+                <div className="leaderboard-input-group">
+                    <input
+                        type="text"
+                        placeholder="Enter your alias"
+                        value={alias}
+                        onChange={(e) => setAlias(e.target.value)}
+                        className="summary-input"
+                    />
+                    <button className="summary-button" onClick={handleAddScore}>
+                        Add to Leaderboard
+                    </button>
+                </div>
+                <Leaderboard scores={scores} />
+                <button className="summary-button try-again" onClick={resetTest}>
                     Try Again
                 </button>
-                <button className="btn btn-secondary" onClick={handleAddScore}>
-                    Add to Leaderboard
-                </button>
-                <Leaderboard scores={scores} />
             </div>
         </div>
     );

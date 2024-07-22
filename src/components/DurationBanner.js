@@ -1,7 +1,7 @@
 import React from 'react';
 
 const DurationBanner = ({ setTestDuration, currentDuration }) => {
-    const durations = [5, 15, 30, 60];
+    const durations = [15, 30, 60];
 
     const handleDurationChange = (duration) => {
         setTestDuration(duration);
