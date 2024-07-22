@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import WordGenerator from '../utils/WordGenerator';
 import GeometryEffect from './GeometryEffect';
 import SummaryPage from './SummaryPage';
+import DurationBanner from './DurationBanner';
 
 const TypingTest = () => {
   const [words, setWords] = useState([]);
@@ -20,14 +21,17 @@ const TypingTest = () => {
   const [lastTypedCorrect, setLastTypedCorrect] = useState(true);
   const [lastTypedChar, setLastTypedChar] = useState('');
   const [wordEffects, setWordEffects] = useState({});
+
   const inputRef = useRef(null);
   const caretRef = useRef(null);
   const wordsRef = useRef(null);
   const wordsContainerRef = useRef(null);
+  const correctCharsRef = useRef(0);
+  const incorrectCharsRef = useRef(0);
 
   useEffect(() => {
     resetTest();
-  }, []);
+  }, [testDuration]);
 
   useEffect(() => {
     if (inputRef.current && !isTestComplete) {
@@ -36,8 +40,9 @@ const TypingTest = () => {
   }, [isTestComplete]);
 
   useEffect(() => {
+    let timer;
     if (startTime && !isTestComplete) {
-      const timer = setInterval(() => {
+      timer = setInterval(() => {
         setTimeLeft((prev) => {
           if (prev <= 1) {
             clearInterval(timer);
@@ -47,16 +52,10 @@ const TypingTest = () => {
           return prev - 1;
         });
       }, 1000);
-
-      return () => clearInterval(timer);
     }
+
+    return () => clearInterval(timer);
   }, [startTime, isTestComplete]);
-
-  useEffect(() => {
-    if (!isTestComplete) {
-      calculateStats();
-    }
-  }, [correctChars, incorrectChars, isTestComplete]);;
 
   useEffect(() => {
     updateCaretPosition();
@@ -71,7 +70,7 @@ const TypingTest = () => {
 
   useEffect(() => {
     const handleResize = () => {
-      setWords(prevWords => [...prevWords]);
+      setWords((prevWords) => [...prevWords]);
     };
 
     window.addEventListener('resize', handleResize);
@@ -86,14 +85,38 @@ const TypingTest = () => {
   const endTest = () => {
     setIsTestComplete(true);
     if (inputRef.current) inputRef.current.disabled = true;
-    calculateStats();
-    console.log(`Test completed! WPM: ${wpm}, Accuracy: ${accuracy}%`);
+
+    const endTime = Date.now();
+    const timeElapsed = (endTime - startTime) / 60000; // Time elapsed in minutes
+
+    // Use the ref values for correct and incorrect characters
+    const totalCharsTyped = correctCharsRef.current + incorrectCharsRef.current;
+    const totalWordsTyped = totalCharsTyped / 5;
+
+    // Calculate WPM
+    const wpm = Math.round(totalWordsTyped / timeElapsed);
+    setWpm(wpm);
+
+    // Calculate accuracy
+    const accuracy = totalCharsTyped > 0 ? Math.round((correctCharsRef.current / totalCharsTyped) * 100) : 100;
+    setAccuracy(accuracy);
+
+    console.log('Test completed!');
+    console.log('Correct characters:', correctCharsRef.current);
+    console.log('Incorrect characters:', incorrectCharsRef.current);
+    console.log('Time elapsed (minutes):', timeElapsed);
+    console.log('Total characters typed:', totalCharsTyped);
+    console.log('Total words typed:', totalWordsTyped);
+    console.log('WPM:', wpm);
+    console.log('Accuracy:', accuracy, '%');
   };
 
   const resetTest = () => {
     setWords(WordGenerator.generateWords(100));
     setCurrentWordIndex(0);
     setCurrentCharIndex(0);
+    correctCharsRef.current = 0;
+    incorrectCharsRef.current = 0;
     setCorrectChars(0);
     setIncorrectChars(0);
     setStartTime(null);
@@ -111,30 +134,7 @@ const TypingTest = () => {
       inputRef.current.disabled = false;
       inputRef.current.focus();
     }
-  };;
-
-  const calculateStats = () => {
-    if (startTime && isTestComplete) {
-      const endTime = Date.now();
-      const timeElapsedInMinutes = (endTime - startTime) / 60000; // Time elapsed in minutes
-
-      // Count correctly typed words
-      const correctWords = words.slice(0, currentWordIndex).filter((word, index) =>
-          wordEffects[index] === 'completed' || wordEffects[index] === 'correct'
-      ).length;
-
-      // Calculate WPM
-      const calculatedWpm = Math.round(correctWords / timeElapsedInMinutes);
-      setWpm(calculatedWpm);
-
-      // Calculate accuracy
-      const totalTypedChars = correctChars + incorrectChars;
-      const calculatedAccuracy = totalTypedChars > 0 ? Math.round((correctChars / totalTypedChars) * 100) : 100;
-      setAccuracy(calculatedAccuracy);
-    }
   };
-
-
 
   const handleKeyDown = (e) => {
     if (isTestComplete) return;
@@ -153,16 +153,17 @@ const TypingTest = () => {
         setTypedText('');
         setTypedChars([]);
         setWordEffects((prev) => ({ ...prev, [currentWordIndex]: 'completed' }));
-        calculateStats();
       }
     } else if (e.key === 'Backspace') {
       if (currentCharIndex > 0) {
         setCurrentCharIndex((prevIndex) => prevIndex - 1);
         setTypedChars((prev) => prev.slice(0, -1));
         if (typedChars[currentCharIndex - 1]?.isCorrect) {
-          setCorrectChars((prev) => prev - 1);
+          correctCharsRef.current--;
+          setCorrectChars(correctCharsRef.current);
         } else {
-          setIncorrectChars((prev) => prev - 1);
+          incorrectCharsRef.current--;
+          setIncorrectChars(incorrectCharsRef.current);
         }
       } else if (currentWordIndex > 0) {
         setCurrentWordIndex((prevIndex) => prevIndex - 1);
@@ -174,14 +175,21 @@ const TypingTest = () => {
       setTypedChars((prev) => [...prev, { char: e.key, isCorrect }]);
       setCurrentCharIndex((prevIndex) => prevIndex + 1);
       if (isCorrect) {
-        setCorrectChars((prev) => prev + 1);
+        correctCharsRef.current++;
+        setCorrectChars(correctCharsRef.current);
         setWordEffects((prev) => ({ ...prev, [currentWordIndex]: 'correct' }));
       } else {
-        setIncorrectChars((prev) => prev + 1);
+        incorrectCharsRef.current++;
+        setIncorrectChars(incorrectCharsRef.current);
         setWordEffects((prev) => ({ ...prev, [currentWordIndex]: 'incorrect' }));
       }
       setLastTypedChar(e.key);
       setLastTypedCorrect(isCorrect);
+
+      console.log(`Key pressed: ${e.key}`);
+      console.log(`Current word: ${currentWord}`);
+      console.log(`Correct chars: ${correctCharsRef.current}`);
+      console.log(`Incorrect chars: ${incorrectCharsRef.current}`);
     }
   };
 
@@ -254,6 +262,7 @@ const TypingTest = () => {
 
   return (
       <div className="typing-test">
+        <DurationBanner setTestDuration={setTestDuration} />
         <GeometryEffect char={lastTypedChar} correct={lastTypedCorrect} />
         {isTestComplete ? (
             <SummaryPage
@@ -261,9 +270,9 @@ const TypingTest = () => {
                 accuracy={accuracy}
                 resetTest={resetTest}
                 completedWords={words.slice(0, currentWordIndex).length}
-                completedChars={correctChars + incorrectChars}
-                incorrectChars={incorrectChars}
-                wordAccuracy={Math.round((correctChars / (correctChars + incorrectChars)) * 100)}
+                completedChars={correctCharsRef.current + incorrectCharsRef.current}
+                incorrectChars={incorrectCharsRef.current}
+                wordAccuracy={Math.round((correctCharsRef.current / (correctCharsRef.current + incorrectCharsRef.current)) * 100)}
             />
         ) : (
             <>
