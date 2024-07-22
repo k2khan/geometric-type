@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/geometric-type/static/css/main.ea6a71d3.css",
-    "main.js": "/geometric-type/static/js/main.ae02ed3f.js",
+    "main.css": "/geometric-type/static/css/main.85d1949c.css",
+    "main.js": "/geometric-type/static/js/main.621d45db.js",
     "index.html": "/geometric-type/index.html",
-    "main.ea6a71d3.css.map": "/geometric-type/static/css/main.ea6a71d3.css.map",
-    "main.ae02ed3f.js.map": "/geometric-type/static/js/main.ae02ed3f.js.map"
+    "main.85d1949c.css.map": "/geometric-type/static/css/main.85d1949c.css.map",
+    "main.621d45db.js.map": "/geometric-type/static/js/main.621d45db.js.map"
   },
   "entrypoints": [
-    "static/css/main.ea6a71d3.css",
-    "static/js/main.ae02ed3f.js"
+    "static/css/main.85d1949c.css",
+    "static/js/main.621d45db.js"
   ]
 }
