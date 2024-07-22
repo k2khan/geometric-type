@@ -32,52 +32,64 @@ body {
 .typing-test {
   padding: 20px;
   border-radius: 10px;
-  max-width: 800px;
+  max-width: 1000px;
   width: 100%;
 }
 
-.words {
+.words-container {
   position: relative;
-  font-size: 1.5rem;
-  line-height: 1.5;
-  margin-bottom: 2rem;
-  text-align: left;
-  height: 120px;
+  height: 144px; /* This should be exactly 3 lines high */
   overflow: hidden;
+  margin-bottom: 2rem;
+  display: flex; /* Added */
+  justify-content: center; /* Added */
+}
+
+.words {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
+  transition: transform 0.3s ease;
+  font-size: 28px;
+  line-height: 48px;
+  letter-spacing: 0.05em;
+  text-align: center; /* Added */
+}
+
+.word-line {
+  white-space: nowrap;
+  height: 48px;
 }
 
 .word {
   display: inline-block;
-  margin-right: 0.5em;
+  margin-right: 0.4em;
   transition: all 0.3s ease;
+  opacity: 0.6; /* Set default opacity for all words */
 }
 
 .word.current {
-  color: var(--sub-color);
+  color: var(--text-color);
+  opacity: 1; /* Full opacity for the current word */
 }
 
 .word.completed {
-  color: #4ae0e0;
-  transform: translateY(-5px);
+  color: var(--sub-color);
+  opacity: 0.6; /* You can adjust this value if you want completed words to look different */
 }
 
 .word span.correct {
-  color: #9eff66;
+  color: var(--main-color);
 }
 
 .word span.incorrect {
-  color: #ca4754;
-  text-decoration: underline;
-}
-
-.word span.current {
-  border-left: 2px solid #e2b714;
+  color: var(--error-color);
 }
 
 .caret {
   position: absolute;
-  width: 2px;
+  width: 3px;
   background-color: var(--caret-color);
   transition: left 0.1s ease, top 0.1s ease;
 }
@@ -100,10 +112,14 @@ body {
 
 .stats {
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
   width: 100%;
   margin-top: 2rem;
   font-size: 1.2rem;
+}
+
+.stats > div {
+  margin: 0 1rem;
 }
 
 button {
@@ -118,4 +134,66 @@ button {
 
 button:hover {
   background-color: var(--sub-color);
+}
+
+/* Styles for SummaryPage */
+.summary-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.summary-container {
+  background-color: var(--bg-color);
+  padding: 2rem;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.summary-title {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.summary-label {
+  font-size: 0.9rem;
+  color: var(--sub-color);
+}
+
+.summary-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.summary-button {
+  background-color: var(--main-color);
+  color: var(--bg-color);
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.summary-button:hover {
+  background-color: var(--text-color);
 }

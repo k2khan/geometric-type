@@ -3,7 +3,6 @@ import WordGenerator from '../utils/WordGenerator';
 import GeometryEffect from './GeometryEffect';
 import SummaryPage from './SummaryPage';
 
-
 const TypingTest = () => {
   const [words, setWords] = useState([]);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
@@ -13,7 +12,7 @@ const TypingTest = () => {
   const [startTime, setStartTime] = useState(null);
   const [wpm, setWpm] = useState(0);
   const [accuracy, setAccuracy] = useState(100);
-  const [testDuration, setTestDuration] = useState(5);
+  const [testDuration, setTestDuration] = useState(60);
   const [typedText, setTypedText] = useState('');
   const [typedChars, setTypedChars] = useState([]);
   const [timeLeft, setTimeLeft] = useState(testDuration);
@@ -24,10 +23,7 @@ const TypingTest = () => {
   const inputRef = useRef(null);
   const caretRef = useRef(null);
   const wordsRef = useRef(null);
-  const [visibleLines, setVisibleLines] = useState(3);
   const wordsContainerRef = useRef(null);
-
-
 
   useEffect(() => {
     resetTest();
@@ -38,16 +34,6 @@ const TypingTest = () => {
       inputRef.current.focus();
     }
   }, [isTestComplete]);
-
-  useEffect(() => {
-    if (wordsContainerRef.current) {
-      const containerHeight = wordsContainerRef.current.offsetHeight;
-      const wordsContainer = document.querySelector('.words');
-      if (wordsContainer) {
-        wordsContainer.style.height = `${containerHeight * visibleLines}px`;
-      }
-    }
-  }, [visibleLines]);
 
   useEffect(() => {
     if (startTime && !isTestComplete) {
@@ -73,11 +59,32 @@ const TypingTest = () => {
 
   useEffect(() => {
     updateCaretPosition();
+    scrollToCurrentWord();
   }, [currentWordIndex, currentCharIndex, typedChars]);
+
+  useEffect(() => {
+    if (currentWordIndex >= words.length - 20) {
+      addMoreWords();
+    }
+  }, [currentWordIndex, words]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWords(prevWords => [...prevWords]);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const addMoreWords = () => {
+    const newWords = WordGenerator.generateWords(50);
+    setWords((prevWords) => [...prevWords, ...newWords]);
+  };
 
   const endTest = () => {
     setIsTestComplete(true);
-    inputRef.current.disabled = true;
+    if (inputRef.current) inputRef.current.disabled = true;
     calculateStats();
     console.log(`Test completed! WPM: ${wpm}, Accuracy: ${accuracy}%`);
   };
@@ -94,17 +101,16 @@ const TypingTest = () => {
     setTimeLeft(testDuration);
     setTypedText('');
     setTypedChars([]);
-    setIsTestComplete(false); // Set isTestComplete to false after resetting
+    setIsTestComplete(false);
     setLastTypedCorrect(true);
     setLastTypedChar('');
     setWordEffects({});
 
     if (inputRef.current) {
       inputRef.current.disabled = false;
-      inputRef.current.focus(); // Focus the input field after resetting
+      inputRef.current.focus();
     }
   };
-
 
   const handleKeyDown = (e) => {
     if (isTestComplete) return;
@@ -118,36 +124,36 @@ const TypingTest = () => {
     if (e.key === ' ') {
       e.preventDefault();
       if (currentCharIndex === currentWord.length) {
-        setCurrentWordIndex(prevIndex => prevIndex + 1);
+        setCurrentWordIndex((prevIndex) => prevIndex + 1);
         setCurrentCharIndex(0);
         setTypedText('');
         setTypedChars([]);
-        setWordEffects(prev => ({...prev, [currentWordIndex]: 'completed'}));
+        setWordEffects((prev) => ({ ...prev, [currentWordIndex]: 'completed' }));
       }
     } else if (e.key === 'Backspace') {
       if (currentCharIndex > 0) {
-        setCurrentCharIndex(prevIndex => prevIndex - 1);
-        setTypedChars(prev => prev.slice(0, -1));
+        setCurrentCharIndex((prevIndex) => prevIndex - 1);
+        setTypedChars((prev) => prev.slice(0, -1));
         if (typedChars[currentCharIndex - 1]?.isCorrect) {
-          setCorrectChars(prev => prev - 1);
+          setCorrectChars((prev) => prev - 1);
         } else {
-          setIncorrectChars(prev => prev - 1);
+          setIncorrectChars((prev) => prev - 1);
         }
       } else if (currentWordIndex > 0) {
-        setCurrentWordIndex(prevIndex => prevIndex - 1);
+        setCurrentWordIndex((prevIndex) => prevIndex - 1);
         setCurrentCharIndex(words[currentWordIndex - 1].length);
         setTypedChars([]);
       }
     } else if (currentCharIndex < currentWord.length && e.key.length === 1) {
       const isCorrect = e.key === currentWord[currentCharIndex];
-      setTypedChars(prev => [...prev, { char: e.key, isCorrect }]);
-      setCurrentCharIndex(prevIndex => prevIndex + 1);
+      setTypedChars((prev) => [...prev, { char: e.key, isCorrect }]);
+      setCurrentCharIndex((prevIndex) => prevIndex + 1);
       if (isCorrect) {
-        setCorrectChars(prev => prev + 1);
-        setWordEffects(prev => ({...prev, [currentWordIndex]: 'correct'}));
+        setCorrectChars((prev) => prev + 1);
+        setWordEffects((prev) => ({ ...prev, [currentWordIndex]: 'correct' }));
       } else {
-        setIncorrectChars(prev => prev + 1);
-        setWordEffects(prev => ({...prev, [currentWordIndex]: 'incorrect'}));
+        setIncorrectChars((prev) => prev + 1);
+        setWordEffects((prev) => ({ ...prev, [currentWordIndex]: 'incorrect' }));
       }
       setLastTypedChar(e.key);
       setLastTypedCorrect(isCorrect);
@@ -157,30 +163,44 @@ const TypingTest = () => {
   const calculateStats = () => {
     if (startTime) {
       const now = Date.now();
-      const timeElapsed = (now - startTime) / 60000; // in minutes
-
-      // Calculate WPM
+      const timeElapsed = (now - startTime) / 60000;
       const totalWords = words.slice(0, currentWordIndex).reduce((acc, word) => acc + word.length, 0) / 5;
       const currentWpm = Math.round((totalWords / timeElapsed) || 0);
+      setWpm(currentWpm);
 
-      // Use a weighted average to smooth out WPM
-      setWpm(prevWpm => {
-        const weight = 0.5; // Adjust this value to change how quickly WPM updates
-        return Math.round(prevWpm * (1 - weight) + currentWpm * weight);
-      });
-
-      // Calculate Accuracy
       const totalChars = words.slice(0, currentWordIndex).join(' ').length;
-      const newAccuracy = totalChars > 0
-          ? Math.round((correctChars / totalChars) * 100)
-          : 100;
+      const newAccuracy = totalChars > 0 ? Math.round((correctChars / totalChars) * 100) : 100;
       setAccuracy(newAccuracy);
     }
   };
 
+  const renderWords = () => {
+    const wordsPerLine = 5;
+    return words.map((word, index) => {
+      const isCurrentWord = index === currentWordIndex;
+      const wordClass = `word ${isCurrentWord ? 'current' : ''} ${wordEffects[index] || ''}`;
 
-
-
+      return (
+          <React.Fragment key={index}>
+            {index % wordsPerLine === 0 && index !== 0 && <br />}
+            <span className={wordClass}>
+          {word.split('').map((char, charIndex) => {
+            let charClass = '';
+            if (isCurrentWord) {
+              if (charIndex < typedChars.length) {
+                charClass = typedChars[charIndex].isCorrect ? 'correct' : 'incorrect';
+              }
+            } else if (index < currentWordIndex) {
+              charClass = 'typed';
+            }
+            return <span key={charIndex} className={charClass}>{char}</span>;
+          })}
+              {' '}
+        </span>
+          </React.Fragment>
+      );
+    });
+  };
 
   const updateCaretPosition = () => {
     if (caretRef.current && !isTestComplete) {
@@ -206,50 +226,39 @@ const TypingTest = () => {
     }
   };
 
-  const renderWords = () => {
-    const lines = [];
-    let currentLine = [];
+  const scrollToCurrentWord = () => {
+    if (wordsContainerRef.current && wordsRef.current) {
+      const containerHeight = wordsContainerRef.current.offsetHeight;
+      const lineHeight = 48; // Adjust this value based on your CSS
+      const currentLineNumber = Math.floor(currentWordIndex / 5);
+      const scrollTop = currentLineNumber * lineHeight - containerHeight / 2 + lineHeight / 2;
 
-    words.forEach((word, wordIndex) => {
-      const wordClass = `word ${wordIndex === currentWordIndex ? 'current' : ''} ${wordEffects[wordIndex] || ''}`;
-
-      const wordChars = word.split('').map((char, charIndex) => {
-        let charClass = '';
-        if (wordIndex === currentWordIndex) {
-          if (charIndex < typedChars.length) {
-            charClass = typedChars[charIndex].isCorrect ? 'correct' : 'incorrect';
-          } else if (charIndex === currentCharIndex) {
-            charClass = 'current';
-          }
-        }
-        return <span key={charIndex} className={charClass}>{char}</span>;
+      wordsContainerRef.current.scrollTo({
+        top: Math.max(0, scrollTop),
+        behavior: 'smooth'
       });
-
-      currentLine.push(
-          <span key={wordIndex} className={wordClass}>
-        {wordChars}
-            {' '}
-      </span>
-      );
-
-      if (currentLine.length >= 20 || wordIndex === words.length - 1) {
-        lines.push(<div key={lines.length}>{currentLine}</div>);
-        currentLine = [];
-      }
-    });
-
-    return lines;
+    }
   };
 
   return (
       <div className="typing-test">
         <GeometryEffect char={lastTypedChar} correct={lastTypedCorrect} />
         {isTestComplete ? (
-            <SummaryPage wpm={wpm} accuracy={accuracy} resetTest={resetTest} />
+            <SummaryPage
+                wpm={wpm}
+                accuracy={accuracy}
+                resetTest={resetTest}
+                completedWords={words.slice(0, currentWordIndex).length}
+                completedChars={correctChars + incorrectChars}
+                incorrectChars={incorrectChars}
+                wordAccuracy={Math.round((correctChars / (correctChars + incorrectChars)) * 100)}
+            />
         ) : (
             <>
-              <div className="words" ref={wordsRef} onClick={() => inputRef.current.focus()}>
-                {renderWords()}
+              <div className="words-container" ref={wordsContainerRef}>
+                <div className="words" ref={wordsRef}>
+                  {renderWords()}
+                </div>
                 <div ref={caretRef} className="caret blinking"></div>
               </div>
               <input

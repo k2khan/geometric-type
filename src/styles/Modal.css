@@ -1,67 +1,87 @@
-.modal {
+.summary-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.8);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 1000;
 }
 
-.modal-content {
-    background-color: transparent;
-    color: var(--text-color);
+.summary-container {
+    background-color: var(--bg-color);
+    border: 2px solid var(--text-color);
+    border-radius: 15px;
     padding: 2rem;
-    max-width: 500px;
-    width: 100%;
+    max-width: 600px;
+    width: 90%;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+.summary-title {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: var(--text-color);
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.summary-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
 }
 
-.modal-content h2 {
-    margin-top: 0;
-    font-size: 2rem;
-    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-}
-
-.modal-content .summary-stats {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 2rem;
-    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-}
-
-.modal-content .stat {
-    margin: 0 1rem;
-}
-
-.modal-content .stat-label {
-    display: block;
-    font-size: 1.2rem;
+.summary-label {
+    font-size: 1rem;
     font-weight: bold;
     margin-bottom: 0.5rem;
+    color: var(--text-color);
+    opacity: 0.8;
 }
 
-.modal-content .stat-value {
+.summary-value {
     font-size: 2rem;
     font-weight: bold;
-}
-
-.modal-content .replay-button {
-    padding: 0.5rem 1rem;
-    font-size: 1.2rem;
-    background-color: transparent;
     color: var(--text-color);
-    border: 2px solid var(--text-color);
-    border-radius: 0.25rem;
-    cursor: pointer;
-    transition: background-color 0.3s ease, color 0.3s ease;
-    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
-.modal-content .replay-button:hover {
+.summary-button {
+    display: block;
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.2rem;
+    font-weight: bold;
     background-color: var(--text-color);
     color: var(--bg-color);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.summary-button:hover {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    border: 2px solid var(--text-color);
+}
+
+@media (max-width: 480px) {
+    .summary-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .summary-value {
+        font-size: 1.5rem;
+    }
 }
