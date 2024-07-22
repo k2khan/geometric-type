@@ -1,20 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/Modal.css';
 import Leaderboard from './Leaderboard';
+import { db } from '../Firebase';
+import { collection, addDoc, query, orderBy, limit, getDocs } from 'firebase/firestore';
 
 const SummaryPage = ({ wpm, accuracy, resetTest, completedWords, completedChars, incorrectChars, wordAccuracy }) => {
-    const [scores, setScores] = useState(() => {
-        const storedScores = JSON.parse(localStorage.getItem('scores')) || [];
-        return storedScores;
-    });
+    const [scores, setScores] = useState([]);
     const [alias, setAlias] = useState('');
 
-    const addScore = (newScore) => {
-        const updatedScores = [...scores, newScore];
-        updatedScores.sort((a, b) => b.wpm - a.wpm);
-        setScores(updatedScores);
-        localStorage.setItem('scores', JSON.stringify(updatedScores));
-        setAlias(''); // Reset the alias input after adding a score
+    useEffect(() => {
+        fetchScores();
+    }, []);
+
+    const fetchScores = async () => {
+        const scoresCollection = collection(db, 'scores');
+        const q = query(scoresCollection, orderBy('wpm', 'desc'), limit(10));
+        const querySnapshot = await getDocs(q);
+        const fetchedScores = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setScores(fetchedScores);
+    };
+
+    const addScore = async (newScore) => {
+        try {
+            await addDoc(collection(db, 'scores'), newScore);
+            await fetchScores();
+            setAlias('');
+        } catch (error) {
+            console.error("Error adding score: ", error);
+        }
     };
 
     const handleAddScore = () => {
