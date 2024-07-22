@@ -72,6 +72,13 @@ const TypingTest = () => {
     }
   }, []);
 
+  const addMoreWords = useCallback(() => {
+    const newWords = WordGenerator.generateWords(80, difficulty);
+    setWords((prevWords) => [...prevWords, ...newWords]);
+  }, [difficulty]);
+
+
+
   const endTest = useCallback(() => {
     setIsTestComplete(true);
     if (inputRef.current) inputRef.current.disabled = true;
@@ -116,7 +123,7 @@ const TypingTest = () => {
 
   useEffect(() => {
     resetTest();
-  }, [resetTest]);
+  }, [resetTest, difficulty])
 
   useEffect(() => {
     if (inputRef.current && !isTestComplete) {
@@ -151,7 +158,7 @@ const TypingTest = () => {
     if (currentWordIndex >= words.length - 20) {
       addMoreWords();
     }
-  }, [currentWordIndex, words]);
+  }, [currentWordIndex, words, addMoreWords]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -161,11 +168,6 @@ const TypingTest = () => {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-
-  const addMoreWords = () => {
-    const newWords = WordGenerator.generateWords(80, difficulty);
-    setWords((prevWords) => [...prevWords, ...newWords]);
-  };
 
   const handleKeyDown = (e) => {
     if (isTestComplete) return;
