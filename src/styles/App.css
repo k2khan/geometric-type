@@ -9,6 +9,9 @@
   --error-extra-color: #7e2a33;
   --colorful-error-color: #ca4754;
   --colorful-error-extra-color: #7e2a33;
+  --correct-letter-color: #9eff66; /* Green color from the colors array */
+  --correct-word-color: #4ae0e0; /* Cyan color from the colors array */
+  --caret-color: #e2b714; /* Yellow color from the colors array */
 }
 
 body {
@@ -113,10 +116,12 @@ body {
 .stats {
   display: flex;
   justify-content: center;
+  align-items: center;
   width: 100%;
   margin-top: 2rem;
   font-size: 1.2rem;
 }
+
 
 .stats > div {
   margin: 0 1rem;
@@ -196,4 +201,43 @@ button:hover {
 
 .summary-button:hover {
   background-color: var(--text-color);
+}
+
+.word span.correct {
+  color: var(--correct-letter-color);
+}
+
+.word.completed {
+  color: var(--correct-word-color);
+}
+
+.stats {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-top: 2rem;
+  font-size: 1.2rem;
+}
+
+.time-left-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.retry-button {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: var(--text-color);
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+  margin-top: 1rem; /* Add some spacing between the time left and retry button */
+}
+
+.retry-button:hover {
+  background-color: rgba(255, 255, 255, 0.4);
 }

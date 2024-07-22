@@ -12,7 +12,7 @@ const TypingTest = () => {
   const [startTime, setStartTime] = useState(null);
   const [wpm, setWpm] = useState(0);
   const [accuracy, setAccuracy] = useState(100);
-  const [testDuration, setTestDuration] = useState(60);
+  const [testDuration, setTestDuration] = useState(15);
   const [typedText, setTypedText] = useState('');
   const [typedChars, setTypedChars] = useState([]);
   const [timeLeft, setTimeLeft] = useState(testDuration);
@@ -44,7 +44,6 @@ const TypingTest = () => {
             endTest();
             return 0;
           }
-          calculateStats();
           return prev - 1;
         });
       }, 1000);
@@ -54,8 +53,10 @@ const TypingTest = () => {
   }, [startTime, isTestComplete]);
 
   useEffect(() => {
-    calculateStats();
-  }, [correctChars, incorrectChars]);
+    if (!isTestComplete) {
+      calculateStats();
+    }
+  }, [correctChars, incorrectChars, isTestComplete]);
 
   useEffect(() => {
     updateCaretPosition();
@@ -112,6 +113,21 @@ const TypingTest = () => {
     }
   };
 
+  const calculateStats = () => {
+    if (startTime && isTestComplete) {
+      const now = Date.now();
+      const timeElapsed = (now - startTime) / 60000; // Time elapsed in minutes
+      const totalChars = words.slice(0, currentWordIndex).join('').length;
+      const grossWpm = (totalChars / 5) / timeElapsed; // Gross WPM
+      const netWpm = Math.round(grossWpm - (incorrectChars / timeElapsed)); // Net WPM
+      setWpm(netWpm);
+
+      const accuracy = totalChars > 0 ? Math.round((correctChars / totalChars) * 100) : 100;
+      setAccuracy(accuracy);
+    }
+  };
+
+
   const handleKeyDown = (e) => {
     if (isTestComplete) return;
 
@@ -129,6 +145,7 @@ const TypingTest = () => {
         setTypedText('');
         setTypedChars([]);
         setWordEffects((prev) => ({ ...prev, [currentWordIndex]: 'completed' }));
+        calculateStats();
       }
     } else if (e.key === 'Backspace') {
       if (currentCharIndex > 0) {
@@ -160,43 +177,30 @@ const TypingTest = () => {
     }
   };
 
-  const calculateStats = () => {
-    if (startTime) {
-      const now = Date.now();
-      const timeElapsed = (now - startTime) / 60000;
-      const totalWords = words.slice(0, currentWordIndex).reduce((acc, word) => acc + word.length, 0) / 5;
-      const currentWpm = Math.round((totalWords / timeElapsed) || 0);
-      setWpm(currentWpm);
-
-      const totalChars = words.slice(0, currentWordIndex).join(' ').length;
-      const newAccuracy = totalChars > 0 ? Math.round((correctChars / totalChars) * 100) : 100;
-      setAccuracy(newAccuracy);
-    }
-  };
-
   const renderWords = () => {
     const wordsPerLine = 5;
     return words.map((word, index) => {
       const isCurrentWord = index === currentWordIndex;
       const wordClass = `word ${isCurrentWord ? 'current' : ''} ${wordEffects[index] || ''}`;
+      const isWordCompleted = wordEffects[index] === 'completed';
 
       return (
           <React.Fragment key={index}>
             {index % wordsPerLine === 0 && index !== 0 && <br />}
             <span className={wordClass}>
-          {word.split('').map((char, charIndex) => {
-            let charClass = '';
-            if (isCurrentWord) {
-              if (charIndex < typedChars.length) {
-                charClass = typedChars[charIndex].isCorrect ? 'correct' : 'incorrect';
+            {word.split('').map((char, charIndex) => {
+              let charClass = '';
+              if (isCurrentWord) {
+                if (charIndex < typedChars.length) {
+                  charClass = typedChars[charIndex].isCorrect ? 'correct' : 'incorrect';
+                }
+              } else if (isWordCompleted) {
+                charClass = 'completed';
               }
-            } else if (index < currentWordIndex) {
-              charClass = 'typed';
-            }
-            return <span key={charIndex} className={charClass}>{char}</span>;
-          })}
+              return <span key={charIndex} className={charClass}>{char}</span>;
+            })}
               {' '}
-        </span>
+          </span>
           </React.Fragment>
       );
     });
@@ -270,10 +274,14 @@ const TypingTest = () => {
                   className="typing-input"
               />
               <div className="stats">
-                <div>WPM: {wpm}</div>
-                <div>Accuracy: {accuracy}%</div>
-                <div>Time left: {timeLeft}s</div>
+                <div className="time-left-container">
+                  <div>Time left: {timeLeft}s</div>
+                  <button className="retry-button" onClick={resetTest}>
+                    Retry
+                  </button>
+                </div>
               </div>
+
             </>
         )}
       </div>
