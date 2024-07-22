@@ -1,11 +1,19 @@
 .leaderboard {
     margin-top: 2rem;
+    max-width: 100%;
 }
 
 .leaderboard-title {
     font-size: 1.5rem;
     color: var(--main-color);
     margin-bottom: 1rem;
+}
+
+.leaderboard-table-container {
+    max-height: 200px; /* Adjust this value as needed */
+    overflow-y: auto;
+    border: 1px solid var(--sub-color);
+    border-radius: 5px;
 }
 
 .leaderboard-table {
@@ -21,10 +29,34 @@
 }
 
 .leaderboard-table th {
+    position: sticky;
+    top: 0;
+    background-color: var(--bg-color);
     font-weight: bold;
     color: var(--main-color);
+    z-index: 1;
 }
 
 .leaderboard-table tr:nth-child(even) {
     background-color: var(--sub-alt-color);
+}
+
+/* Scrollbar styles for webkit browsers */
+.leaderboard-table-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.leaderboard-table-container::-webkit-scrollbar-track {
+    background: var(--sub-alt-color);
+}
+
+.leaderboard-table-container::-webkit-scrollbar-thumb {
+    background-color: var(--main-color);
+    border-radius: 4px;
+}
+
+/* Scrollbar styles for Firefox */
+.leaderboard-table-container {
+    scrollbar-width: thin;
+    scrollbar-color: var(--main-color) var(--sub-alt-color);
 }

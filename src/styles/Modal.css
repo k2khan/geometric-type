@@ -18,6 +18,8 @@
     max-width: 500px;
     width: 90%;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    max-height: 90vh; /* Limit the height to 90% of the viewport height */
+    overflow-y: auto; /* Allow scrolling if content exceeds the height */
 }
 
 .summary-title {

@@ -57,8 +57,8 @@ const TypingTest = () => {
   const scrollToCurrentWord = useCallback(() => {
     if (wordsContainerRef.current && wordsRef.current) {
       const containerHeight = wordsContainerRef.current.offsetHeight;
-      const lineHeight = 48;
-      const currentLineNumber = Math.floor(currentWordIndex / 5);
+      const lineHeight = 60; // Increased from 48
+      const currentLineNumber = Math.floor(currentWordIndex / 5); // Keep this as 5
       const scrollTop = currentLineNumber * lineHeight - containerHeight / 2 + lineHeight / 2;
 
       wordsContainerRef.current.scrollTo({
@@ -159,7 +159,7 @@ const TypingTest = () => {
   }, []);
 
   const addMoreWords = () => {
-    const newWords = WordGenerator.generateWords(50);
+    const newWords = WordGenerator.generateWords(80); // Increased from 50
     setWords((prevWords) => [...prevWords, ...newWords]);
   };
 
@@ -221,7 +221,7 @@ const TypingTest = () => {
   };
 
   const renderWords = () => {
-    const wordsPerLine = 5;
+    const wordsPerLine = 5; // Keep this the same as before
     return words.map((word, wordIndex) => {
       const isCurrentWord = wordIndex === currentWordIndex;
       const isCompletedWord = wordIndex < currentWordIndex;
@@ -231,22 +231,22 @@ const TypingTest = () => {
           <React.Fragment key={wordIndex}>
             {wordIndex % wordsPerLine === 0 && wordIndex !== 0 && <br />}
             <span className={wordClass}>
-            {word.split('').map((char, charIndex) => {
-              let charClass = '';
-              if (isCurrentWord) {
-                if (charIndex < typedChars.length) {
-                  charClass = typedChars[charIndex].isCorrect ? 'correct' : 'incorrect';
-                }
-              } else if (isCompletedWord) {
-                const completedChars = completedWords[wordIndex];
-                if (completedChars && charIndex < completedChars.length) {
-                  charClass = completedChars[charIndex].isCorrect ? 'correct' : 'incorrect';
-                }
+          {word.split('').map((char, charIndex) => {
+            let charClass = '';
+            if (isCurrentWord) {
+              if (charIndex < typedChars.length) {
+                charClass = typedChars[charIndex].isCorrect ? 'correct' : 'incorrect';
               }
-              return <span key={charIndex} className={charClass}>{char}</span>;
-            })}
+            } else if (isCompletedWord) {
+              const completedChars = completedWords[wordIndex];
+              if (completedChars && charIndex < completedChars.length) {
+                charClass = completedChars[charIndex].isCorrect ? 'correct' : 'incorrect';
+              }
+            }
+            return <span key={charIndex} className={charClass}>{char}</span>;
+          })}
               {' '}
-          </span>
+        </span>
           </React.Fragment>
       );
     });
