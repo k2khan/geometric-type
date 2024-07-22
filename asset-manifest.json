@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/geometric-type/static/css/main.7e4ec500.css",
-    "main.js": "/geometric-type/static/js/main.6442cfcf.js",
-    "index.html": "/geometric-type/index.html",
-    "main.7e4ec500.css.map": "/geometric-type/static/css/main.7e4ec500.css.map",
-    "main.6442cfcf.js.map": "/geometric-type/static/js/main.6442cfcf.js.map"
+    "main.css": "/www.speed-type.com/static/css/main.7e4ec500.css",
+    "main.js": "/www.speed-type.com/static/js/main.bd85e0e8.js",
+    "index.html": "/www.speed-type.com/index.html",
+    "main.7e4ec500.css.map": "/www.speed-type.com/static/css/main.7e4ec500.css.map",
+    "main.bd85e0e8.js.map": "/www.speed-type.com/static/js/main.bd85e0e8.js.map"
   },
   "entrypoints": [
     "static/css/main.7e4ec500.css",
-    "static/js/main.6442cfcf.js"
+    "static/js/main.bd85e0e8.js"
   ]
 }
