@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import '../styles/Modal.css';
 import Leaderboard from './Leaderboard';
 import { db } from '../Firebase';
 import { collection, addDoc, query, orderBy, limit, getDocs } from 'firebase/firestore';
+import '../styles/Modal.css';
+import '../styles/Buttons.css';
 
 const SummaryPage = ({ wpm, accuracy, resetTest, completedWords, completedChars, incorrectChars, wordAccuracy }) => {
     const [scores, setScores] = useState([]);
@@ -71,10 +72,10 @@ const SummaryPage = ({ wpm, accuracy, resetTest, completedWords, completedChars,
                     value={alias}
                     onChange={(e) => setAlias(e.target.value)}
                 />
-                <button className="summary-button" onClick={resetTest}>
+                <button className="btn btn-primary" onClick={resetTest}>
                     Try Again
                 </button>
-                <button className="summary-button" onClick={handleAddScore}>
+                <button className="btn btn-secondary" onClick={handleAddScore}>
                     Add to Leaderboard
                 </button>
                 <Leaderboard scores={scores} />

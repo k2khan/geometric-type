@@ -3,6 +3,7 @@ import WordGenerator from '../utils/WordGenerator';
 import GeometryEffect from './GeometryEffect';
 import SummaryPage from './SummaryPage';
 import DurationBanner from './DurationBanner';
+import '../styles/Buttons.css';
 
 const TypingTest = () => {
   const [words, setWords] = useState([]);

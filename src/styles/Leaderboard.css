@@ -1,0 +1,37 @@
+.leaderboard {
+    background-color: var(--bg-color);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.leaderboard table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.leaderboard th,
+.leaderboard td {
+    padding: 0.5rem;
+    text-align: left;
+    border-bottom: 1px solid var(--sub-color);
+}
+
+.leaderboard th {
+    background-color: var(--sub-alt-color);
+    color: var(--text-color);
+    font-weight: bold;
+}
+
+.leaderboard tr:nth-child(even) {
+    background-color: var(--sub-alt-color);
+}
+
+.leaderboard .avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+    vertical-align: middle;
+}
