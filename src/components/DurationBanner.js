@@ -3,16 +3,12 @@ import React from 'react';
 const DurationBanner = ({ setTestDuration, currentDuration }) => {
     const durations = [15, 30, 60];
 
-    const handleDurationChange = (duration) => {
-        setTestDuration(duration);
-    };
-
     return (
         <div className="duration-banner">
             {durations.map(duration => (
                 <button
                     key={duration}
-                    onClick={() => handleDurationChange(duration)}
+                    onClick={() => setTestDuration(duration)}
                     className={currentDuration === duration ? 'active' : ''}
                 >
                     {duration}s

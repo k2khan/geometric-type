@@ -3,7 +3,7 @@
   --main-color: #e2b714;
   --caret-color: #ff69b4;
   --sub-color: #646669;
-  --sub-alt-color: #2c2e31;
+  --sub-alt-color: rgba(44, 46, 49, 0.7);
   --text-color: #d1d0c5;
   --error-color: #ca4754;
   --error-extra-color: #7e2a33;
@@ -44,14 +44,14 @@ body {
 
 .words-container {
   position: relative;
-  height: 200px; /* Adjust this value as needed */
+  height: 200px;
   overflow: hidden;
   margin-bottom: 2rem;
   width: 100%;
   max-width: 1000px;
   display: flex;
   align-items: center;
-  justify-content: center; /* Add this line */
+  justify-content: center;
 }
 
 .words {
@@ -73,7 +73,6 @@ body {
   margin-right: 0.4em;
   flex: 0 0 auto;
 }
-
 
 .word.current {
   color: var(--text-color);
@@ -125,20 +124,6 @@ body {
 
 .stats > div {
   margin: 0 1rem;
-}
-
-button {
-  background-color: var(--sub-alt-color);
-  color: var(--text-color);
-  border: none;
-  padding: 10px 20px;
-  font-size: 1rem;
-  cursor: pointer;
-  margin-top: 2rem;
-}
-
-button:hover {
-  background-color: var(--sub-color);
 }
 
 .summary-overlay {
@@ -206,22 +191,29 @@ button:hover {
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-bottom: 10px;
 }
 
-.retry-button {
-  background-color: rgba(255, 255, 255, 0.2);
+.time-left {
+  font-size: 1.2rem;
+  font-weight: 600;
   color: var(--text-color);
-  border: none;
-  padding: 10px 20px;
-  font-size: 1rem;
-  cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  transition: background-color 0.3s ease;
-  margin-top: 1rem;
+  background-color: transparent;
+  border: 2px solid transparent;
+  padding: 8px 15px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 100px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.retry-button:hover {
-  background-color: rgba(255, 255, 255, 0.4);
+.time-left:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: var(--text-color);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
 }
 
 .leaderboard table {
@@ -246,32 +238,89 @@ button:hover {
   background-color: var(--sub-alt-color);
 }
 
-.duration-banner {
+/* Updated styles for front page buttons */
+.test-settings {
   display: flex;
   justify-content: center;
+  gap: 2rem;
   margin-bottom: 2rem;
-  border-radius: 8px;
-  padding: 0.5rem;
+  padding: 1rem;
 }
 
-.duration-banner button {
-  margin: 0 0.25rem;
+.setting-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 200px;
+}
+
+.setting-header {
+  font-size: 1.2rem;
+  color: var(--main-color);
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.duration-banner,
+.difficulty-selector {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  width: 100%;
+}
+
+.duration-banner button,
+.difficulty-selector button {
   padding: 0.5rem 1rem;
   font-size: 1rem;
-  font-weight: 600;
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: transparent;
   color: var(--text-color);
-  border: none;
+  border: 2px solid transparent;
+  border-radius: 5px;
   cursor: pointer;
   transition: all 0.3s ease;
-  border-radius: 5px;
 }
 
-.duration-banner button:hover {
+.duration-banner button:hover,
+.difficulty-selector button:hover {
+  background-color: rgba(226, 183, 20, 0.3);
+  border-color: var(--main-color);
+}
+
+.duration-banner button.active,
+.difficulty-selector button.active {
+  background-color: rgba(226, 183, 20, 0.5);
+  border-color: var(--main-color);
+  color: var(--text-color);
+}
+
+/* For smaller screens */
+@media (max-width: 600px) {
+  .test-settings {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .setting-group {
+    width: 100%;
+  }
+}
+
+/* Retry button styles */
+.retry-button {
+  background-color: transparent;
+  color: var(--text-color);
+  border: 2px solid transparent;
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add this line for the shadow */
+}
+
+.retry-button:hover {
   background-color: rgba(255, 255, 255, 0.2);
-}
-
-.duration-banner button.active {
-  background-color: var(--main-color);
-  color: var(--bg-color);
+  border-color: var(--text-color);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2); /* Enhance shadow on hover */
 }

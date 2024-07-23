@@ -274,11 +274,20 @@ const TypingTest = () => {
     });
   };
 
+
   return (
       <div className="typing-test">
-        <DurationBanner setTestDuration={handleDurationChange} currentDuration={testDuration} />
-        <DifficultySelector setDifficulty={handleDifficultyChange} currentDifficulty={difficulty} />
-        <GeometryEffect char={lastTypedChar} correct={lastTypedCorrect} />
+        <div className="test-settings">
+          <div className="setting-group">
+            <h3 className="setting-header">Test Duration</h3>
+            <DurationBanner setTestDuration={handleDurationChange} currentDuration={testDuration}/>
+          </div>
+          <div className="setting-group">
+            <h3 className="setting-header">Difficulty Level</h3>
+            <DifficultySelector setDifficulty={handleDifficultyChange} currentDifficulty={difficulty}/>
+          </div>
+        </div>
+        <GeometryEffect char={lastTypedChar} correct={lastTypedCorrect}/>
         {isTestComplete ? (
             <SummaryPage
                 wpm={wpm}
@@ -308,7 +317,7 @@ const TypingTest = () => {
               />
               <div className="stats">
                 <div className="time-left-container">
-                  <div>Time left: {timeLeft}s</div>
+                  <div className="time-left">Time left: {timeLeft}s</div>
                   <button className="retry-button" onClick={resetTest}>
                     Retry
                   </button>

@@ -1,5 +1,4 @@
 import React from 'react';
-import '../styles/DifficultySelector.css';
 
 const DifficultySelector = ({ setDifficulty, currentDifficulty }) => {
     const difficulties = ['easy', 'medium', 'hard'];
