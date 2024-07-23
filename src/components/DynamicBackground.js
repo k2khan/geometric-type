@@ -18,8 +18,12 @@ const DynamicBackground = () => {
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
+        const getParticleCount = () => {
+            return window.innerWidth < 768 ? 50 : 100;
+        };
+
         const particles = [];
-        for (let i = 0; i < 100; i++) {
+        for (let i = 0; i < getParticleCount(); i++) {
             particles.push({
                 x: Math.random() * canvas.width,
                 y: Math.random() * canvas.height,
@@ -28,6 +32,7 @@ const DynamicBackground = () => {
                 dy: (Math.random() - 0.5) * 0.5
             });
         }
+
 
         const colorPalette = ['#e2b714', '#ca4754', '#4ae0e0', '#9eff66', '#ff66d9'];
         let colorIndex = 0;

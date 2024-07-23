@@ -207,13 +207,6 @@ body {
   justify-content: center;
   min-width: 100px;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.time-left:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-  border-color: var(--text-color);
-  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
 }
 
 .leaderboard table {
@@ -323,4 +316,54 @@ body {
   background-color: rgba(255, 255, 255, 0.2);
   border-color: var(--text-color);
   box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2); /* Enhance shadow on hover */
+}
+
+@media (max-width: 768px) {
+  .typing-test {
+    padding: 10px;
+  }
+
+  .words {
+    font-size: 24px;
+    line-height: 40px;
+  }
+
+  .stats {
+    flex-direction: column;
+  }
+
+  .stats > div {
+    margin: 0.5rem 0;
+  }
+
+  .test-settings {
+    flex-direction: column;
+  }
+
+  .setting-group {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  .duration-banner button,
+  .difficulty-selector button,
+  .summary-button {
+    padding: 12px 20px;
+    font-size: 16px;
+  }
+
+  .leaderboard-table-container {
+    max-height: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .words {
+    font-size: 18px;
+    line-height: 30px;
+  }
+
+  .summary-stats {
+    grid-template-columns: 1fr;
+  }
 }

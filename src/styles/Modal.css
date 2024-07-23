@@ -111,3 +111,33 @@
     color: var(--sub-color);
     cursor: not-allowed;
 }
+
+@media (max-width: 768px) {
+    .summary-container {
+        width: 95%;
+        padding: 1rem;
+    }
+
+    .summary-title {
+        font-size: 1.5rem;
+    }
+
+    .summary-stats {
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .summary-value {
+        font-size: 1.5rem;
+    }
+
+    .leaderboard-input-group {
+        flex-direction: column;
+    }
+
+    .summary-input,
+    .summary-button {
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+}

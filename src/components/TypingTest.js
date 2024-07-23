@@ -77,6 +77,12 @@ const TypingTest = () => {
     setWords((prevWords) => [...prevWords, ...newWords]);
   }, [difficulty]);
 
+  const handleTouchStart = (e) => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  };
+
   const endTest = useCallback(() => {
     setIsTestComplete(true);
     if (inputRef.current) inputRef.current.disabled = true;
@@ -276,7 +282,7 @@ const TypingTest = () => {
 
 
   return (
-      <div className="typing-test">
+      <div className="typing-test" onTouchStart={handleTouchStart}>
         <div className="test-settings">
           <div className="setting-group">
             <h3 className="setting-header">Test Duration</h3>
@@ -314,6 +320,7 @@ const TypingTest = () => {
                   value={typedText}
                   onChange={(e) => setTypedText(e.target.value)}
                   className="typing-input"
+                  style={{ fontSize: '16px' }}
               />
               <div className="stats">
                 <div className="time-left-container">

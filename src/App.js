@@ -4,7 +4,7 @@ import TypingTest from './components/TypingTest';
 import DynamicBackground from './components/DynamicBackground';
 import ReactGA from 'react-ga4';
 
-const MEASUREMENT_ID = 'G-BJ6VGF3MET'; // Your Google Analytics measurement ID
+const MEASUREMENT_ID = 'G-BJ6VGF3MET';
 
 function App() {
     useEffect(() => {
