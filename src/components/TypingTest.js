@@ -13,7 +13,7 @@ const TypingTest = () => {
   const [startTime, setStartTime] = useState(null);
   const [wpm, setWpm] = useState(0);
   const [accuracy, setAccuracy] = useState(100);
-  const [testDuration, setTestDuration] = useState(15);
+  const [testDuration, setTestDuration] = useState(30);
   const [typedText, setTypedText] = useState('');
   const [typedChars, setTypedChars] = useState([]);
   const [timeLeft, setTimeLeft] = useState(testDuration);
@@ -76,8 +76,6 @@ const TypingTest = () => {
     const newWords = WordGenerator.generateWords(80, difficulty);
     setWords((prevWords) => [...prevWords, ...newWords]);
   }, [difficulty]);
-
-
 
   const endTest = useCallback(() => {
     setIsTestComplete(true);
@@ -276,7 +274,6 @@ const TypingTest = () => {
     });
   };
 
-
   return (
       <div className="typing-test">
         <DurationBanner setTestDuration={handleDurationChange} currentDuration={testDuration} />
@@ -323,4 +320,4 @@ const TypingTest = () => {
   );
 };
 
-export default TypingTest;;
+export default TypingTest;

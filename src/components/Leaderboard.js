@@ -1,10 +1,23 @@
 import React from 'react';
 import '../styles/Leaderboard.css';
 
-const Leaderboard = ({ scores }) => {
+const Leaderboard = ({ scores, selectedDifficulty, onDifficultyChange }) => {
+    const difficulties = ['easy', 'medium', 'hard'];
+
     return (
         <div className="leaderboard">
             <h3 className="leaderboard-title">Leaderboard</h3>
+            <div className="difficulty-selector">
+                {difficulties.map(diff => (
+                    <button
+                        key={diff}
+                        className={`difficulty-button ${selectedDifficulty === diff ? 'active' : ''}`}
+                        onClick={() => onDifficultyChange(diff)}
+                    >
+                        {diff.charAt(0).toUpperCase() + diff.slice(1)}
+                    </button>
+                ))}
+            </div>
             <div className="leaderboard-table-container">
                 <table className="leaderboard-table">
                     <thead>
@@ -13,7 +26,6 @@ const Leaderboard = ({ scores }) => {
                         <th>Alias</th>
                         <th>WPM</th>
                         <th>Accuracy</th>
-                        <th>Difficulty</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -23,7 +35,6 @@ const Leaderboard = ({ scores }) => {
                             <td>{score.alias}</td>
                             <td>{score.wpm}</td>
                             <td>{score.accuracy}%</td>
-                            <td>{score.difficulty}</td>
                         </tr>
                     ))}
                     </tbody>
