@@ -92,9 +92,10 @@ body {
 
 .caret {
   position: absolute;
-  width: 3px;
-  background-color: var(--caret-color);
-  transition: left 0.1s ease, top 0.1s ease;
+  width: 2px;
+  background-color: #000;
+  transition: transform 16.67ms linear; /* 60fps */
+  will-change: transform;
 }
 
 .caret.blinking {

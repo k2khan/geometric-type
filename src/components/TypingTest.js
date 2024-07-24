@@ -87,18 +87,28 @@ const TypingTest = () => {
     setIsTestComplete(true);
     if (inputRef.current) inputRef.current.disabled = true;
 
-    const endTime = Date.now();
-    const timeElapsed = (endTime - startTime) / 60000;
+    const endTime = startTime + testDuration * 1000; // Use the exact end time
+    const timeElapsedInSeconds = testDuration; // Use the exact test duration
 
-    const totalCharsTyped = correctCharsRef.current + incorrectCharsRef.current;
-    const totalWordsTyped = totalCharsTyped / 5;
+    console.log('Start time:', startTime);
+    console.log('End time:', endTime);
+    console.log('Time elapsed (seconds):', timeElapsedInSeconds);
+    console.log('Correct words:', correctWords);
+    console.log('Total attempted words:', totalAttemptedWords);
 
-    const wpm = Math.round(totalWordsTyped / timeElapsed);
+    const wpmRaw = (correctWords / timeElapsedInSeconds) * 60;
+    const wpm = Math.round(wpmRaw);
+
+    console.log('WPM (raw):', wpmRaw);
+    console.log('WPM (rounded):', wpm);
+
     setWpm(wpm);
 
-    const accuracy = totalCharsTyped > 0 ? Math.round((correctCharsRef.current / totalCharsTyped) * 100) : 100;
+    const accuracy = totalAttemptedWords > 0
+        ? Math.round((correctWords / totalAttemptedWords) * 100)
+        : 100;
     setAccuracy(accuracy);
-  }, [startTime]);
+  }, [startTime, testDuration, correctWords, totalAttemptedWords]);
 
   const resetTest = useCallback(() => {
     setWords(WordGenerator.generateWords(100, difficulty));
@@ -138,20 +148,20 @@ const TypingTest = () => {
   useEffect(() => {
     let timer;
     if (startTime && !isTestComplete) {
+      const endTime = startTime + testDuration * 1000; // Calculate the exact end time
       timer = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 1) {
-            clearInterval(timer);
-            endTest();
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
+        const now = Date.now();
+        if (now >= endTime) {
+          clearInterval(timer);
+          endTest();
+        } else {
+          setTimeLeft(Math.ceil((endTime - now) / 1000));
+        }
+      }, 100); // Check more frequently
     }
 
     return () => clearInterval(timer);
-  }, [startTime, isTestComplete, endTest]);
+  }, [startTime, isTestComplete, testDuration, endTest]);
 
   useEffect(() => {
     updateCaretPosition();
