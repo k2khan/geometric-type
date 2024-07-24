@@ -21,7 +21,7 @@ const SummaryPage = ({ wpm, accuracy, resetTest, completedWords, completedChars,
             scoresCollection,
             where("difficulty", "==", diff),
             orderBy('wpm', 'desc'),
-            limit(10)
+            limit(100)
         );
         const querySnapshot = await getDocs(q);
         const fetchedScores = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
