@@ -24,6 +24,8 @@ const TypingTest = () => {
   const [correctWords, setCorrectWords] = useState(0);
   const [totalAttemptedWords, setTotalAttemptedWords] = useState(0);
   const [difficulty, setDifficulty] = useState('medium');
+  const [isTyping, setIsTyping] = useState(false);
+
 
   const inputRef = useRef(null);
   const caretRef = useRef(null);
@@ -31,6 +33,7 @@ const TypingTest = () => {
   const wordsContainerRef = useRef(null);
   const correctCharsRef = useRef(0);
   const incorrectCharsRef = useRef(0);
+  const typingTimeoutRef = useRef(null);
 
   const updateCaretPosition = useCallback(() => {
     if (caretRef.current && !isTestComplete) {
@@ -54,7 +57,7 @@ const TypingTest = () => {
         caretRef.current.style.height = `${rect.height}px`;
       }
     }
-  }, [isTestComplete, currentCharIndex]);
+  }, [isTestComplete, currentCharIndex]);;
 
   const scrollToCurrentWord = useCallback(() => {
     if (wordsContainerRef.current && wordsRef.current) {
@@ -146,6 +149,14 @@ const TypingTest = () => {
   }, [isTestComplete]);
 
   useEffect(() => {
+    return () => {
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
     let timer;
     if (startTime && !isTestComplete) {
       const endTime = startTime + testDuration * 1000; // Calculate the exact end time
@@ -185,6 +196,10 @@ const TypingTest = () => {
 
   const handleKeyDown = (e) => {
     if (isTestComplete) return;
+
+    setIsTyping(true);
+    clearTimeout(typingTimeoutRef.current);
+    typingTimeoutRef.current = setTimeout(() => setIsTyping(false), 500);
 
     if (!startTime) {
       setStartTime(Date.now());
@@ -321,8 +336,10 @@ const TypingTest = () => {
                 <div className="words" ref={wordsRef}>
                   {renderWords()}
                 </div>
-                <div ref={caretRef} className="caret blinking"></div>
-              </div>
+                <div
+                    ref={caretRef}
+                    className={`caret ${isTyping ? 'typing' : ''}`}
+                ></div>              </div>
               <input
                   ref={inputRef}
                   type="text"
