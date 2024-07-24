@@ -58,20 +58,28 @@ const SummaryPage = ({ wpm, accuracy, resetTest, completedWords, completedChars,
                 <h2 className="summary-title">Test Complete!</h2>
                 <div className="summary-stats">
                     <div className="summary-stat">
-                        <span className="summary-label">WPM</span>
+                        <span className="summary-label">Words Per Minute (WPM)</span>
                         <span className="summary-value">{wpm}</span>
                     </div>
                     <div className="summary-stat">
-                        <span className="summary-label">Accuracy</span>
-                        <span className="summary-value">{accuracy}%</span>
+                        <span className="summary-label">Word Accuracy</span>
+                        <span className="summary-value">{wordAccuracy}%</span>
                     </div>
                     <div className="summary-stat">
-                        <span className="summary-label">Words</span>
+                        <span className="summary-label">Total Words Typed</span>
                         <span className="summary-value">{completedWords}</span>
                     </div>
                     <div className="summary-stat">
-                        <span className="summary-label">Characters</span>
+                        <span className="summary-label">Total Characters Typed</span>
                         <span className="summary-value">{completedChars}</span>
+                    </div>
+                    <div className="summary-stat">
+                        <span className="summary-label">Incorrect Characters</span>
+                        <span className="summary-value">{incorrectChars}</span>
+                    </div>
+                    <div className="summary-stat">
+                        <span className="summary-label">Character Accuracy</span>
+                        <span className="summary-value">{accuracy}%</span>
                     </div>
                 </div>
                 <div className="leaderboard-input-group">
